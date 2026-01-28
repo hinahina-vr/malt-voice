@@ -17,6 +17,7 @@ export const useAudioEngine = ({
     playbackRate,
     loopMode,
     drillMode,
+    restartOnClick,
     grainSize,
     loopVolumes,
     setPlayingSounds
@@ -34,6 +35,9 @@ export const useAudioEngine = ({
     const echoGain = useRef(null);
 
     const activeLoops = useRef({});
+    const activeOneshots = useRef({});
+    const oneshotTimeouts = useRef({});
+    const playheadInfo = useRef({});
 
     const [isLoading, setIsLoading] = useState(true);
     const [progress, setProgress] = useState(0);
@@ -166,6 +170,7 @@ export const useAudioEngine = ({
                 if (activeLoops.current[id]) {
                     try { activeLoops.current[id].src.stop(); } catch (e) { }
                     delete activeLoops.current[id];
+                    delete playheadInfo.current[id];
                     setPlayingSounds(p => {
                         const next = { ...p };
                         delete next[id];
@@ -174,10 +179,20 @@ export const useAudioEngine = ({
                     return;
                 }
             }
+            if (mode === 'oneshot' && restartOnClick && activeOneshots.current[id]) {
+                try { activeOneshots.current[id].stop(); } catch (e) { }
+                delete activeOneshots.current[id];
+                delete playheadInfo.current[id];
+                if (oneshotTimeouts.current[id]) {
+                    clearTimeout(oneshotTimeouts.current[id]);
+                    delete oneshotTimeouts.current[id];
+                }
+            }
         } else {
             if (activeLoops.current[id]) {
                 try { activeLoops.current[id].src.stop(); } catch (e) { }
                 delete activeLoops.current[id];
+                delete playheadInfo.current[id];
             }
         }
 
@@ -197,27 +212,82 @@ export const useAudioEngine = ({
                 src.loopEnd = forcedGrain || grainSize;
                 src._customGrain = src.loopEnd;
                 activeLoops.current[id] = { src, gain: gainNode };
+                playheadInfo.current[id] = {
+                    startTime: ctx.currentTime,
+                    durationSec: (src.loopEnd || grainSize) / playbackRate,
+                    loop: true,
+                    mode: 'drill'
+                };
                 setPlayingSounds(p => ({ ...p, [id]: 'drill' }));
             } else if (mode === 'loop') {
                 src.loop = true;
                 activeLoops.current[id] = { src, gain: gainNode };
+                playheadInfo.current[id] = {
+                    startTime: ctx.currentTime,
+                    durationSec: buffer.duration / playbackRate,
+                    loop: true,
+                    mode: 'loop'
+                };
                 setPlayingSounds(p => ({ ...p, [id]: 'loop' }));
             } else {
-                setPlayingSounds(p => ({ ...p, [id]: 'oneshot' }));
-                setTimeout(() => setPlayingSounds(p => {
-                    if (p[id] === 'oneshot') {
-                        const next = { ...p };
-                        delete next[id];
-                        return next;
+                if (restartOnClick && activeOneshots.current[id]) {
+                    try { activeOneshots.current[id].stop(); } catch (e) { }
+                    delete activeOneshots.current[id];
+                    delete playheadInfo.current[id];
+                    if (oneshotTimeouts.current[id]) {
+                        clearTimeout(oneshotTimeouts.current[id]);
+                        delete oneshotTimeouts.current[id];
                     }
-                    return p;
-                }), 100);
+                }
+                setPlayingSounds(p => ({ ...p, [id]: 'oneshot' }));
+                playheadInfo.current[id] = {
+                    startTime: ctx.currentTime,
+                    durationSec: buffer.duration / playbackRate,
+                    loop: false,
+                    mode: 'oneshot'
+                };
+                const durationMs = Math.max(60, (buffer.duration / playbackRate) * 1000);
+                if (oneshotTimeouts.current[id]) clearTimeout(oneshotTimeouts.current[id]);
+                oneshotTimeouts.current[id] = setTimeout(() => {
+                    setPlayingSounds(p => {
+                        if (p[id] === 'oneshot') {
+                            const next = { ...p };
+                            delete next[id];
+                            return next;
+                        }
+                        return p;
+                    });
+                    delete oneshotTimeouts.current[id];
+                    delete playheadInfo.current[id];
+                }, durationMs);
             }
 
             src.connect(gainNode);
 
             if (eqNodes.current.low) gainNode.connect(eqNodes.current.low);
             else gainNode.connect(ctx.destination);
+
+            if (mode === 'oneshot') {
+                activeOneshots.current[id] = src;
+                src.onended = () => {
+                    if (activeOneshots.current[id] === src) {
+                        delete activeOneshots.current[id];
+                        delete playheadInfo.current[id];
+                        if (oneshotTimeouts.current[id]) {
+                            clearTimeout(oneshotTimeouts.current[id]);
+                            delete oneshotTimeouts.current[id];
+                        }
+                        setPlayingSounds(p => {
+                            if (p[id] === 'oneshot') {
+                                const next = { ...p };
+                                delete next[id];
+                                return next;
+                            }
+                            return p;
+                        });
+                    }
+                };
+            }
 
             src.start(0);
         }
@@ -235,6 +305,7 @@ export const useAudioEngine = ({
         echoFeedbackNode,
         echoGain,
         activeLoops,
+        playheadInfo,
         isLoading,
         progress,
         playSound

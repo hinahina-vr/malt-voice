@@ -40,6 +40,7 @@ function App() {
     const [loopMode, setLoopMode] = useState(false);
     const [drillMode, setDrillMode] = useState(false);
     const [grainSize, setGrainSize] = useState(0.4);
+    const [restartOnClick, setRestartOnClick] = useState(false);
 
     // BPM Sync
     const [bpm, setBpm] = useState(120);
@@ -51,7 +52,9 @@ function App() {
 
     const {
         audioCtxRef,
+        audioBuffers,
         activeLoops,
+        playheadInfo,
         isLoading,
         progress,
         playSound
@@ -71,6 +74,7 @@ function App() {
         playbackRate,
         loopMode,
         drillMode,
+        restartOnClick,
         grainSize,
         loopVolumes,
         setPlayingSounds
@@ -203,6 +207,7 @@ function App() {
         setLoopMode(false);
         setDrillMode(false);
         setGrainSize(0.4);
+        setRestartOnClick(false);
 
         Object.values(activeLoops.current).forEach(item => {
             try { item.src.stop(); } catch (e) { }
@@ -258,8 +263,23 @@ function App() {
                     onEqLowChange={setEqLow}
                     loopMode={loopMode}
                     drillMode={drillMode}
-                    onToggleLoopMode={() => { setLoopMode(!loopMode); setDrillMode(false); }}
-                    onToggleDrillMode={() => { setDrillMode(!drillMode); setLoopMode(false); }}
+                    onToggleLoopMode={() => {
+                        const next = !loopMode;
+                        setLoopMode(next);
+                        setDrillMode(false);
+                        if (next) setRestartOnClick(false);
+                    }}
+                    onToggleDrillMode={() => {
+                        const next = !drillMode;
+                        setDrillMode(next);
+                        setLoopMode(false);
+                        if (next) setRestartOnClick(false);
+                    }}
+                    restartOnClick={restartOnClick}
+                    onToggleRestartOnClick={() => {
+                        if (loopMode || drillMode) return;
+                        setRestartOnClick(!restartOnClick);
+                    }}
                     playbackRate={playbackRate}
                     onPlaybackRateChange={setPlaybackRate}
                     grainSize={grainSize}
@@ -289,6 +309,10 @@ function App() {
                 playingSounds={playingSounds}
                 onPlaySound={playSound}
                 compact={showPro}
+                audioBuffers={audioBuffers}
+                loadProgress={progress}
+                audioCtxRef={audioCtxRef}
+                playheadInfo={playheadInfo}
             />
 
             {showPro && (

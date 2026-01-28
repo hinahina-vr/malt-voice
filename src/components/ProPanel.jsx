@@ -73,15 +73,18 @@ const VSlider = ({ label, min, max, value, onChange }) => {
     );
 };
 
-const ModeButton = ({ label, active, activeBg, activeColor, onClick }) => {
+const ModeButton = ({ label, active, activeBg, activeColor, onClick, disabled }) => {
     return (
         <button
             className={`loop-mode-btn ${active ? 'active' : ''}`}
             onClick={onClick}
+            disabled={disabled}
             style={{
                 ...modeButtonBaseStyle,
                 background: active ? activeBg : '#333',
-                color: active ? activeColor : '#888'
+                color: active ? activeColor : '#888',
+                opacity: disabled ? 0.45 : 1,
+                cursor: disabled ? 'not-allowed' : 'pointer'
             }}
         >
             {label}
@@ -136,6 +139,8 @@ const ProPanel = ({
     drillMode,
     onToggleLoopMode,
     onToggleDrillMode,
+    restartOnClick,
+    onToggleRestartOnClick,
     playbackRate,
     onPlaybackRateChange,
     grainSize,
@@ -207,6 +212,16 @@ const ProPanel = ({
                             activeBg="#ff4081"
                             activeColor="#fff"
                             onClick={onToggleDrillMode}
+                        />
+                    </div>
+                    <div style={modeRowStyle}>
+                        <ModeButton
+                            label="RETRIG"
+                            active={restartOnClick}
+                            activeBg="#ffd54f"
+                            activeColor="#000"
+                            onClick={onToggleRestartOnClick}
+                            disabled={loopMode || drillMode}
                         />
                     </div>
 
