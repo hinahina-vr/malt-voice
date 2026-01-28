@@ -52,7 +52,9 @@ function App() {
 
     const {
         audioCtxRef,
+        audioBuffers,
         activeLoops,
+        playheadInfo,
         isLoading,
         progress,
         playSound
@@ -307,6 +309,10 @@ function App() {
                 playingSounds={playingSounds}
                 onPlaySound={playSound}
                 compact={showPro}
+                audioBuffers={audioBuffers}
+                loadProgress={progress}
+                audioCtxRef={audioCtxRef}
+                playheadInfo={playheadInfo}
             />
 
             {showPro && (
