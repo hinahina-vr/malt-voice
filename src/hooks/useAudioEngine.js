@@ -17,6 +17,7 @@ export const useAudioEngine = ({
     playbackRate,
     loopMode,
     drillMode,
+    restartOnClick,
     grainSize,
     loopVolumes,
     setPlayingSounds
@@ -34,6 +35,7 @@ export const useAudioEngine = ({
     const echoGain = useRef(null);
 
     const activeLoops = useRef({});
+    const activeOneshots = useRef({});
 
     const [isLoading, setIsLoading] = useState(true);
     const [progress, setProgress] = useState(0);
@@ -174,6 +176,10 @@ export const useAudioEngine = ({
                     return;
                 }
             }
+            if (mode === 'oneshot' && restartOnClick && activeOneshots.current[id]) {
+                try { activeOneshots.current[id].stop(); } catch (e) { }
+                delete activeOneshots.current[id];
+            }
         } else {
             if (activeLoops.current[id]) {
                 try { activeLoops.current[id].src.stop(); } catch (e) { }
@@ -203,6 +209,10 @@ export const useAudioEngine = ({
                 activeLoops.current[id] = { src, gain: gainNode };
                 setPlayingSounds(p => ({ ...p, [id]: 'loop' }));
             } else {
+                if (restartOnClick && activeOneshots.current[id]) {
+                    try { activeOneshots.current[id].stop(); } catch (e) { }
+                    delete activeOneshots.current[id];
+                }
                 setPlayingSounds(p => ({ ...p, [id]: 'oneshot' }));
                 setTimeout(() => setPlayingSounds(p => {
                     if (p[id] === 'oneshot') {
@@ -218,6 +228,15 @@ export const useAudioEngine = ({
 
             if (eqNodes.current.low) gainNode.connect(eqNodes.current.low);
             else gainNode.connect(ctx.destination);
+
+            if (mode === 'oneshot') {
+                activeOneshots.current[id] = src;
+                src.onended = () => {
+                    if (activeOneshots.current[id] === src) {
+                        delete activeOneshots.current[id];
+                    }
+                };
+            }
 
             src.start(0);
         }
