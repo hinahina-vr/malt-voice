@@ -1,0 +1,831 @@
+:root {
+    --bg-color: #1a1a1a;
+    --text-color: #f0f0f0;
+    --primary-color: #ff69b4;
+    --secondary-color: #333;
+    --panel-bg: #252525;
+    --card-bg: #2d2d2d;
+
+    --hina-color: #ff85c0;
+    --kai-color: #5cdbd3;
+    --others-color: #ffd700;
+
+    font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: dark;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    /* Fallback */
+    height: 100dvh;
+    /* Dynamic viewport height */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+}
+
+/* HEADER */
+header {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.header-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 0.5rem;
+    width: 100%;
+}
+
+.header-logo {
+    max-width: 100%;
+    height: auto;
+    max-height: 80px;
+    /* Limit height on desktop */
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 0.5rem;
+    background: var(--panel-bg);
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.bgm-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+}
+
+.label-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #aaa;
+    overflow: hidden;
+    /* Prevent overflow */
+}
+
+.marquee-container {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 15s linear infinite;
+    color: #666;
+    font-size: 0.65rem;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.bgm-credit {
+    margin-left: 8px;
+    font-size: 0.55rem;
+    font-weight: normal;
+    color: #888;
+    white-space: normal;
+    /* Allow wrap */
+    word-break: break-all;
+    line-height: 1.1;
+}
+
+.bgm-buttons {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.bgm-btn {
+    background: var(--secondary-color);
+    color: #ccc;
+    border: 1px solid #444;
+    padding: 0.2rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.bgm-btn:hover {
+    background: #444;
+}
+
+.bgm-btn.active {
+    background: var(--primary-color);
+    color: black;
+    border-color: var(--primary-color);
+    font-weight: bold;
+}
+
+.control-right-group {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.vol-control {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 2px;
+    font-size: 0.7rem;
+    color: #aaa;
+    min-width: 60px;
+}
+
+.vol-control input[type=range] {
+    width: 100%;
+    accent-color: var(--primary-color);
+}
+
+/* HUGE PRO BUTTON */
+.pro-toggle-btn {
+    background: #444;
+    color: #fff;
+    border: 2px solid #555;
+    font-size: 1.1rem;
+    font-weight: 900;
+    padding: 0 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-shadow: 0 2px 0 #000;
+    white-space: nowrap;
+}
+
+.pro-toggle-btn:hover {
+    background: #555;
+}
+
+.pro-toggle-btn.active {
+    background: var(--primary-color);
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 15px var(--primary-color);
+    text-shadow: none;
+}
+
+
+/* INLINE PRO PANEL */
+.pro-panel-inline {
+    background: #222;
+    border-bottom: 2px solid var(--primary-color);
+    /* Increased padding-bottom to prevent label cutoff */
+    padding: 0.8rem 0.8rem 1.2rem 0.8rem;
+    animation: slideDown 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+        height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+.fx-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.fx-title {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    border-bottom: 1px solid #444;
+    margin-bottom: 4px;
+}
+
+.fx-types {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+
+.fx-types button {
+    background: #333;
+    color: #999;
+    border: 1px solid #444;
+    padding: 4px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+}
+
+.fx-types button.active {
+    background: var(--primary-color);
+    color: #000;
+    font-weight: bold;
+    border-color: #fff;
+}
+
+.fx-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.fx-row label {
+    font-size: 0.65rem;
+    color: #aaa;
+}
+
+.fx-row input {
+    width: 100%;
+    accent-color: var(--primary-color);
+    height: 4px;
+    background: #111;
+    border-radius: 2px;
+}
+
+.eq-row {
+    display: flex;
+    justify-content: space-around;
+    height: 50px;
+    align-items: flex-end;
+    /* ensure there is space at bottom inside the row if flex alignment needs it */
+    padding-bottom: 2px;
+}
+
+.v-slider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.v-slider input {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    appearance: slider-vertical;
+    width: 24px;
+    flex: 1;
+    background: #111;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    /* Space between slider and label */
+}
+
+.v-slider label {
+    font-size: 0.6rem;
+    color: #777;
+    font-weight: bold;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+
+/* TABS */
+.char-tabs {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid #333;
+    flex-shrink: 0;
+    height: 40px;
+}
+
+.tab {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--panel-bg);
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+}
+
+.char-icon-frame {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-right: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.char-icon-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.hina-img {
+    transform: scale(1.8) translateY(5%);
+    transform-origin: center center;
+}
+
+.kai-img {
+    transform: scale(1.4) translateY(5%);
+    transform-origin: center center;
+}
+
+.tab.active {
+    opacity: 1;
+    color: black;
+    border-bottom: none !important;
+}
+
+.tab.hina.active {
+    background: var(--hina-color);
+    box-shadow: 0 0 15px var(--hina-color);
+}
+
+.tab.kai.active {
+    background: var(--kai-color);
+    box-shadow: 0 0 15px var(--kai-color);
+}
+
+.tab.others.active {
+    background: var(--others-color);
+    box-shadow: 0 0 15px var(--others-color);
+}
+
+/* BOARD */
+.content-area {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.board {
+    flex: 1;
+    padding: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(65px, 1fr);
+    gap: 0.5rem;
+    height: 100%;
+    overflow-y: auto;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Compact Board Mode (Mobile Only) */
+@media (max-width: 600px) {
+    .board.compact {
+        gap: 2px;
+        /* Minimal gap */
+        padding: 2px;
+        /* Force rows to be smaller to fit 4x4 or 4x5 grid on screen */
+        grid-auto-rows: 1fr;
+        align-content: stretch;
+    }
+
+    .board.compact .sound-btn {
+        font-size: 0.6rem;
+        padding: 0;
+        border-radius: 4px;
+        /* Ensure text doesn't overflow */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (min-width: 400px) {
+    .board {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 600px) {
+    .board {
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: minmax(80px, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .sound-btn {
+        font-size: 1.2rem;
+        border-radius: 12px;
+    }
+}
+
+@media (min-width: 1000px) {
+    .board {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .sound-btn {
+        font-size: 1.5rem;
+    }
+}
+
+.sound-btn {
+    background: var(--card-bg);
+    background-image: linear-gradient(to bottom right, var(--theme-bg), transparent);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0.2rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    line-height: 1.1;
+}
+
+.sound-btn:active,
+.sound-btn.playing {
+    transform: scale(0.95);
+    background: var(--primary-color);
+    color: black;
+    box-shadow: 0 0 20px var(--primary-color);
+    border-color: white;
+    z-index: 10;
+}
+
+.construction {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #888;
+}
+
+.construction h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--kai-color);
+}
+
+/* LOADING */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--primary-color);
+}
+
+.loading-content {
+    text-align: center;
+    width: 80%;
+    max-width: 400px;
+}
+
+.loading-image {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid #333;
+}
+
+.loading-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    letter-spacing: 2px;
+    animation: pulse 1.5s infinite;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-color);
+    transition: width 0.2s ease-out;
+}
+
+.loading-text {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 5px;
+    letter-spacing: 1px;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 10px var(--primary-color);
+    }
+
+    100% {
+        opacity: 0.6;
+    }
+}
+
+/* MOBILE ADJUSTMENTS */
+@media (max-width: 480px) {
+    .controls {
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .header-logo {
+        max-height: 45px;
+        /* Compact logo for mobile */
+    }
+
+
+
+    .vol-label {
+        display: none;
+    }
+
+    /* Make volume slider longer as requested (approx 1.8x of 48px ~ 86px) */
+    .vol-control {
+        width: 86px;
+        min-width: 86px;
+    }
+
+    .control-right-group {
+        gap: 4px;
+    }
+
+    .pro-toggle-btn {
+        font-size: 0.9rem;
+        padding: 0 0.6rem;
+    }
+
+    .fx-types button {
+        font-size: 0.6rem;
+        padding: 4px 2px;
+    }
+
+    /* EQ Height reduced to ~50% (originally 80px -> 40px) */
+    .eq-row {
+        height: 40px;
+    }
+
+    .v-slider label {
+        font-size: 0.5rem;
+    }
+
+    .loading-content h2 {
+        font-size: 1.0rem;
+        margin-bottom: 1rem;
+    }
+
+    .loading-content h2 {
+        font-size: 1.0rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* COMPACT PRO PANEL FOR MOBILE (Up to 600px) */
+@media (max-width: 600px) {
+    .pro-panel-inline {
+        padding: 0.2rem 0.4rem 0.2rem 0.4rem;
+        /* Minimized vertical padding */
+        gap: 0.2rem;
+    }
+
+    .fx-section {
+        gap: 2px;
+        /* Restore small gap */
+        margin-bottom: 4px;
+    }
+
+    .fx-title {
+        margin-bottom: 2px;
+        font-size: 0.65rem;
+        /* Slightly readable */
+        padding-bottom: 1px;
+        line-height: 1.1;
+        border-bottom: 1px solid #333;
+        /* Restore separator */
+    }
+
+    .fx-row {
+        gap: 1px;
+    }
+
+    .fx-row label {
+        font-size: 0.6rem;
+        line-height: 1.1;
+        margin-bottom: 1px;
+    }
+
+    .fx-row input {
+        height: 8px;
+        /* Easier to see/touch */
+        margin-top: 1px;
+        margin-bottom: 1px;
+    }
+
+    .eq-row {
+        height: auto;
+        /* Remove fixed height constraint */
+        padding-bottom: 2px;
+        align-items: flex-end;
+        gap: 4px;
+        display: flex;
+    }
+
+    .v-slider {
+        gap: 0;
+        flex: 1;
+        width: auto;
+        flex-direction: column-reverse;
+        /* Label on top, Input bottom */
+    }
+
+    .v-slider input {
+        writing-mode: horizontal-tb;
+        /* Reset to horizontal */
+        direction: ltr;
+        appearance: auto;
+        width: 100%;
+        height: 6px;
+        /* Standard track height */
+        margin: 0;
+    }
+
+    .v-slider label {
+        font-size: 0.55rem;
+        line-height: 1;
+        text-align: center;
+        margin-bottom: 1px;
+        width: 100%;
+        line-height: 1;
+    }
+
+    .fx-types {
+        gap: 2px;
+        margin-bottom: 2px;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+
+    .fx-types button {
+        padding: 2px 0;
+        /* Minimal padding */
+        font-size: 0.55rem;
+        line-height: 1.1;
+        flex: 1;
+        white-space: nowrap;
+        min-height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* APP CONTAINER */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* FOOTER CONTROLS */
+.footer-controls {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    /* Center them */
+    align-items: center;
+    gap: 0.5rem;
+    /* Smaller gap */
+    padding: 0.4rem;
+    /* Smaller container padding */
+    background: #222;
+    border-top: 1px solid #444;
+    z-index: 100;
+}
+
+.footer-btn {
+    flex: 0 0 40%;
+    /* Approx 40% width each, centering max width */
+    max-width: 150px;
+    /* Don't get too wide on desktop */
+    border: none;
+    border-radius: 4px;
+    padding: 0.4rem;
+    /* Half padding */
+    font-size: 0.8rem;
+    /* Smaller font */
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.1s;
+}
+
+.footer-btn:active {
+    transform: scale(0.98);
+}
+
+.share-btn {
+    background: #1DA1F2;
+    /* Twitter/X Color */
+    color: white;
+    box-shadow: 0 0 10px rgba(29, 161, 242, 0.4);
+}
+
+.reset-btn {
+    background: #444;
+    color: #ccc;
+}
+
+/* Adjust Content Area to not be hidden by footer if necessary */
+/* Since we use flex column, it should just shrink properly */
+
+@media (max-width: 600px) {
+    .footer-controls {
+        padding: 2px;
+        /* Minimal padding */
+        gap: 4px;
+    }
+
+    .footer-btn {
+        padding: 4px 0;
+        /* Thinner buttons */
+        font-size: 0.7rem;
+        border-radius: 4px;
+        height: 28px;
+        /* Force small height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

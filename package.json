@@ -1,0 +1,21 @@
+{
+  "name": "malt-voice",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "pages:deploy": "vite build && wrangler pages deploy dist --project-name malt-voice"
+  },
+  "devDependencies": {
+    "vite": "^7.2.4",
+    "wrangler": "^4.61.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.1.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  }
+}
