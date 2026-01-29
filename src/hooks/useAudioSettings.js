@@ -77,6 +77,7 @@ export const useAudioSettings = () => {
 
     const applySettings = useCallback(({ settings, grainSize: decodedGrainSize }) => {
         setPlaybackRate(settings.playbackRate);
+        setTimeStretch(settings.timeStretch ?? DEFAULT_PLAYBACK.timeStretch);
         setEchoFeedback(settings.echoFeedback);
         setEchoTime(settings.echoTime);
         setEchoMix(settings.echoMix);

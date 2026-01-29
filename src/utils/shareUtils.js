@@ -17,9 +17,14 @@ export const buildShareUrl = ({
     echoTime,
     echoFeedback,
     playbackRate,
+    timeStretch,
     bpm,
     loopMode,
-    drillMode
+    drillMode,
+    seqTracks,
+    seqSteps,
+    seqTrackMutes,
+    seqTrackRetrig
 }) => {
     const code = encodeSettings({
         voices,
@@ -38,9 +43,14 @@ export const buildShareUrl = ({
         echoTime,
         echoFeedback,
         playbackRate,
+        timeStretch,
         bpm,
         loopMode,
-        drillMode
+        drillMode,
+        seqTracks,
+        seqSteps,
+        seqTrackMutes,
+        seqTrackRetrig
     });
     return `${window.location.origin}${window.location.pathname}?p=${code}`;
 };

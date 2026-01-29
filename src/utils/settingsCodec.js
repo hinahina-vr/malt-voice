@@ -35,9 +35,14 @@ export const encodeSettings = ({
     echoTime,
     echoFeedback,
     playbackRate,
+    timeStretch,
     bpm,
     loopMode,
-    drillMode
+    drillMode,
+    seqTracks,
+    seqSteps,
+    seqTrackMutes,
+    seqTrackRetrig
 }) => {
     let b = 0n;
     const push = (val, bits) => { b = (b << BigInt(bits)) + BigInt(val); };
@@ -66,6 +71,31 @@ export const encodeSettings = ({
         }
     });
 
+    // --- SEQUENCER ---
+    const tracksCount = 4;
+    const stepsPerTrack = 16;
+
+    for (let row = 0; row < tracksCount; row++) {
+        for (let step = 0; step < stepsPerTrack; step++) {
+            const active = seqSteps?.[row]?.[step] ? 1 : 0;
+            push(active, 1);
+        }
+    }
+
+    for (let row = 0; row < tracksCount; row++) {
+        const id = seqTracks?.[row] || null;
+        const vIndex = id ? (allVoices.findIndex(v => v.id === id) + 1) : 0;
+        push(Math.max(0, Math.min(63, vIndex)), 6);
+    }
+
+    for (let row = 0; row < tracksCount; row++) {
+        push(seqTrackMutes?.[row] ? 1 : 0, 1);
+    }
+
+    for (let row = 0; row < tracksCount; row++) {
+        push(seqTrackRetrig?.[row] ? 1 : 0, 1);
+    }
+
     // --- GLOBAL SETTINGS ---
     const fType = ['lowpass', 'highpass', 'bandpass', 'notch'].indexOf(filterType);
 
@@ -82,10 +112,11 @@ export const encodeSettings = ({
     push(Math.round((echoTime - 0.1) / 0.9 * 15), 4);
     push(Math.round(echoFeedback / 0.9 * 15), 4);
     push(Math.round((playbackRate - 0.5) / 1.5 * 15), 4);
+    push(Math.round((timeStretch - 0.5) / 1.5 * 15), 4);
     push(Math.max(0, Math.min(255, bpm - 40)), 8);
 
     // VERSION HEADER (Last pushed -> First popped)
-    push(1, 4); // v1
+    push(2, 4); // v2
 
     return toBase64(b);
 };
@@ -101,49 +132,110 @@ export const decodeSettings = (str, voices) => {
         };
 
         const version = pop(4);
-        if (version !== 1) {
+        if (version !== 1 && version !== 2) {
             return { ok: false, version };
         }
 
-        const d_bpm = pop(8);
-        const d_pitch = pop(4);
-        const d_efbk = pop(4);
-        const d_etime = pop(4);
-        const d_emix = pop(4);
-        const d_rdecay = pop(4);
-        const d_rmix = pop(4);
-        const d_eql = pop(4);
-        const d_eqm = pop(4);
-        const d_eqh = pop(4);
-        const d_fres = pop(4);
-        const d_ffreq = pop(5);
-        const d_ftype = pop(2);
-
-        const d_loop = pop(1);
-        const d_drill = pop(1);
-
-        const bpm = d_bpm + 40;
-        const playbackRate = Number((d_pitch / 15 * 1.5 + 0.5).toFixed(1));
-        const echoFeedback = Number((d_efbk / 15 * 0.9).toFixed(2));
-        const echoTime = Number((d_etime / 15 * 0.9 + 0.1).toFixed(2));
-        const echoMix = Math.round(d_emix / 15 * 100);
-        const reverbDecay = Number((d_rdecay / 15 * 4.9 + 0.1).toFixed(1));
-        const reverbMix = Math.round(d_rmix / 15 * 100);
-        const eqLow = Math.round(d_eql / 15 * 24 - 12);
-        const eqMid = Math.round(d_eqm / 15 * 24 - 12);
-        const eqHigh = Math.round(d_eqh / 15 * 24 - 12);
-        const filterQ = Number((d_fres / 15 * 20).toFixed(1));
-        const filterFreq = Math.round(d_ffreq / 31 * 200 - 100);
-        const filterType = ['lowpass', 'highpass', 'bandpass', 'notch'][d_ftype] || 'lowpass';
-
-        const loopMode = d_loop === 1;
-        const drillMode = d_drill === 1;
-
-        const note32 = (60 / bpm) / 8;
-        const grainSize = Number(note32.toFixed(3));
-
-        const restored = [];
         const allVoices = Object.values(voices).flat();
+        const restored = [];
+        let seq = null;
+
+        const decodeShared = () => {
+            const d_bpm = pop(8);
+            const d_tstretch = version === 2 ? pop(4) : null;
+            const d_pitch = pop(4);
+            const d_efbk = pop(4);
+            const d_etime = pop(4);
+            const d_emix = pop(4);
+            const d_rdecay = pop(4);
+            const d_rmix = pop(4);
+            const d_eql = pop(4);
+            const d_eqm = pop(4);
+            const d_eqh = pop(4);
+            const d_fres = pop(4);
+            const d_ffreq = pop(5);
+            const d_ftype = pop(2);
+
+            const d_loop = pop(1);
+            const d_drill = pop(1);
+
+            const bpm = d_bpm + 40;
+            const playbackRate = Number((d_pitch / 15 * 1.5 + 0.5).toFixed(1));
+            const timeStretch = d_tstretch == null
+                ? 1.0
+                : Number((d_tstretch / 15 * 1.5 + 0.5).toFixed(1));
+            const echoFeedback = Number((d_efbk / 15 * 0.9).toFixed(2));
+            const echoTime = Number((d_etime / 15 * 0.9 + 0.1).toFixed(2));
+            const echoMix = Math.round(d_emix / 15 * 100);
+            const reverbDecay = Number((d_rdecay / 15 * 4.9 + 0.1).toFixed(1));
+            const reverbMix = Math.round(d_rmix / 15 * 100);
+            const eqLow = Math.round(d_eql / 15 * 24 - 12);
+            const eqMid = Math.round(d_eqm / 15 * 24 - 12);
+            const eqHigh = Math.round(d_eqh / 15 * 24 - 12);
+            const filterQ = Number((d_fres / 15 * 20).toFixed(1));
+            const filterFreq = Math.round(d_ffreq / 31 * 200 - 100);
+            const filterType = ['lowpass', 'highpass', 'bandpass', 'notch'][d_ftype] || 'lowpass';
+
+            const loopMode = d_loop === 1;
+            const drillMode = d_drill === 1;
+
+            return {
+                settings: {
+                    bpm,
+                    playbackRate,
+                    timeStretch,
+                    echoFeedback,
+                    echoTime,
+                    echoMix,
+                    reverbDecay,
+                    reverbMix,
+                    eqLow,
+                    eqMid,
+                    eqHigh,
+                    filterQ,
+                    filterFreq,
+                    filterType,
+                    loopMode,
+                    drillMode
+                }
+            };
+        };
+
+        const decodeSequencer = () => {
+            const tracksCount = 4;
+            const stepsPerTrack = 16;
+            const retrig = Array(tracksCount).fill(false);
+            const mutes = Array(tracksCount).fill(false);
+            const tracks = Array(tracksCount).fill(null);
+            const steps = Array.from({ length: tracksCount }, () => Array(stepsPerTrack).fill(false));
+
+            for (let row = tracksCount - 1; row >= 0; row--) {
+                retrig[row] = pop(1) === 1;
+            }
+            for (let row = tracksCount - 1; row >= 0; row--) {
+                mutes[row] = pop(1) === 1;
+            }
+            for (let row = tracksCount - 1; row >= 0; row--) {
+                const idx = pop(6);
+                tracks[row] = idx > 0 ? (allVoices[idx - 1]?.id || null) : null;
+            }
+            for (let row = tracksCount - 1; row >= 0; row--) {
+                for (let step = stepsPerTrack - 1; step >= 0; step--) {
+                    steps[row][step] = pop(1) === 1;
+                }
+            }
+
+            return { tracks, steps, mutes, retrig };
+        };
+
+        const { settings } = decodeShared();
+
+        if (version === 2) {
+            seq = decodeSequencer();
+        }
+
+        const note32 = (60 / settings.bpm) / 8;
+        const grainSize = Number(note32.toFixed(3));
 
         while (true) {
             if (b <= 0n) break;
@@ -171,25 +263,10 @@ export const decodeSettings = (str, voices) => {
 
         return {
             ok: true,
-            settings: {
-                bpm,
-                playbackRate,
-                echoFeedback,
-                echoTime,
-                echoMix,
-                reverbDecay,
-                reverbMix,
-                eqLow,
-                eqMid,
-                eqHigh,
-                filterQ,
-                filterFreq,
-                filterType,
-                loopMode,
-                drillMode
-            },
+            settings,
             grainSize,
-            restored
+            restored,
+            seq
         };
     } catch (e) {
         return { ok: false, error: e };

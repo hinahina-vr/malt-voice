@@ -201,6 +201,43 @@ export const useSequencer = ({
         setSeqSteps(createDefaultSeqSteps());
     }, []);
 
+    const applySequencerSettings = useCallback((snapshot) => {
+        if (!snapshot) return;
+        const tracks = createDefaultSeqTracks();
+        const steps = createDefaultSeqSteps();
+        const mutes = createDefaultSeqTrackMutes();
+        const retrig = createDefaultSeqTrackRetrig();
+
+        if (Array.isArray(snapshot.tracks)) {
+            snapshot.tracks.forEach((id, index) => {
+                if (index < tracks.length) tracks[index] = id || null;
+            });
+        }
+        if (Array.isArray(snapshot.steps)) {
+            snapshot.steps.forEach((row, rIndex) => {
+                if (rIndex >= steps.length || !Array.isArray(row)) return;
+                row.forEach((active, sIndex) => {
+                    if (sIndex < steps[rIndex].length) steps[rIndex][sIndex] = !!active;
+                });
+            });
+        }
+        if (Array.isArray(snapshot.mutes)) {
+            snapshot.mutes.forEach((active, index) => {
+                if (index < mutes.length) mutes[index] = !!active;
+            });
+        }
+        if (Array.isArray(snapshot.retrig)) {
+            snapshot.retrig.forEach((active, index) => {
+                if (index < retrig.length) retrig[index] = !!active;
+            });
+        }
+
+        setSeqTracks(tracks);
+        setSeqSteps(steps);
+        setSeqTrackMutes(mutes);
+        setSeqTrackRetrig(retrig);
+    }, []);
+
     return {
         seqEnabled,
         setSeqEnabled,
@@ -222,6 +259,7 @@ export const useSequencer = ({
         handleToggleStep,
         handlePlaySound,
         handleBpmChange,
-        resetSteps
+        resetSteps,
+        applySequencerSettings
     };
 };

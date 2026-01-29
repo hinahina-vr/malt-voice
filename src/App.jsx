@@ -142,7 +142,8 @@ function App() {
         handleToggleRetrig,
         handleToggleStep,
         handleBpmChange,
-        resetSteps
+        resetSteps,
+        applySequencerSettings
     } = useSequencer({
         voices,
         audioCtxRef,
@@ -157,8 +158,11 @@ function App() {
         const { settings, grainSize: decodedGrainSize } = decoded;
         setBpm(settings.bpm);
         applySettings({ settings, grainSize: decodedGrainSize });
+        if (decoded.seq) {
+            applySequencerSettings(decoded.seq);
+        }
         setShowPro(true);
-    }, [applySettings, setBpm]);
+    }, [applySettings, applySequencerSettings, setBpm]);
 
     const restoreTriggers = useCallback((restored) => {
         setPendingTriggers(restored);
@@ -204,9 +208,14 @@ function App() {
             echoTime,
             echoFeedback,
             playbackRate,
+            timeStretch,
             bpm,
             loopMode,
-            drillMode
+            drillMode,
+            seqTracks,
+            seqSteps,
+            seqTrackMutes,
+            seqTrackRetrig
         });
         const twitterUrl = buildShareTweetUrl(shareUrl);
         window.open(twitterUrl, '_blank');
@@ -226,9 +235,14 @@ function App() {
         grainSize,
         loopMode,
         playbackRate,
+        timeStretch,
         playingSounds,
         reverbDecay,
         reverbMix,
+        seqSteps,
+        seqTrackMutes,
+        seqTrackRetrig,
+        seqTracks,
         voices
     ]);
 
