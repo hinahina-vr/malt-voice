@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { voices, bgmList } from './data/assets';
 import './index.css';
 
@@ -9,6 +9,7 @@ import ProPanel from './components/ProPanel';
 import CharacterTabs from './components/CharacterTabs';
 import SoundBoard from './components/SoundBoard';
 import FooterControls from './components/FooterControls';
+import StepSequencer from './components/StepSequencer';
 
 import { useAudioEngine } from './hooks/useAudioEngine';
 import { useAudioUnlock } from './hooks/useAudioUnlock';
@@ -46,6 +47,12 @@ function App() {
     const [bpm, setBpm] = useState(120);
     const [tapTimes, setTapTimes] = useState([]);
     const [loopVolumes, setLoopVolumes] = useState({});
+    const [seqEnabled, setSeqEnabled] = useState(false);
+    const [seqPlaying, setSeqPlaying] = useState(false);
+    const [seqSync, setSeqSync] = useState(true);
+    const [seqTracks, setSeqTracks] = useState([null, null, null, null]);
+    const [seqSteps, setSeqSteps] = useState(() => Array.from({ length: 4 }, () => Array(16).fill(false)));
+    const [seqStepIndex, setSeqStepIndex] = useState(0);
 
     const [modalOpen, setModalOpen] = useState(false);
     const [pendingTriggers, setPendingTriggers] = useState([]); // Array of {sound, mode}
@@ -81,7 +88,32 @@ function App() {
     });
 
     useAudioUnlock(audioCtxRef);
-    useBgmPlayer({ bgmList, currentBgm, volume });
+    const bgmRef = useBgmPlayer({ bgmList, currentBgm, volume });
+
+    const voiceById = useMemo(() => {
+        const map = new Map();
+        Object.values(voices).flat().forEach(v => map.set(v.id, v));
+        return map;
+    }, [voices]);
+
+    const voiceOptions = useMemo(() => {
+        return Object.values(voices).flat().map(v => ({ id: v.id, label: v.label }));
+    }, [voices]);
+
+    const seqStepsRef = useRef(seqSteps);
+    const seqTracksRef = useRef(seqTracks);
+    const bpmRef = useRef(bpm);
+    const playSoundRef = useRef(playSound);
+    const voiceByIdRef = useRef(voiceById);
+    const schedulerRef = useRef(null);
+    const nextStepTimeRef = useRef(0);
+    const currentStepRef = useRef(0);
+
+    useEffect(() => { seqStepsRef.current = seqSteps; }, [seqSteps]);
+    useEffect(() => { seqTracksRef.current = seqTracks; }, [seqTracks]);
+    useEffect(() => { bpmRef.current = bpm; }, [bpm]);
+    useEffect(() => { playSoundRef.current = playSound; }, [playSound]);
+    useEffect(() => { voiceByIdRef.current = voiceById; }, [voiceById]);
 
     useEffect(() => {
         const p = new URLSearchParams(window.location.search).get('p');
@@ -91,7 +123,7 @@ function App() {
         if (!decoded.ok) {
             if (decoded.version !== undefined) {
                 console.warn("Unknown settings version or old URL", decoded.version);
-                alert("URLの形式が古いため読み込めませんでした。\n新しいURLを作成してください。");
+                alert("URLの形式が古いため読み込めませんでした。\\n新しいURLを作成してください。");
             } else if (decoded.error) {
                 console.error("Failed to decode settings", decoded.error);
             }
@@ -125,7 +157,7 @@ function App() {
         }
 
         window.history.replaceState({}, '', window.location.pathname);
-    }, []);
+    }, [voices]);
 
     const handleModalPlay = () => {
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
@@ -231,6 +263,109 @@ function App() {
     };
     const selectedBgmData = bgmList.find(b => b.id === currentBgm);
 
+    useEffect(() => {
+        if (!seqSync) return;
+        if (selectedBgmData && selectedBgmData.bpm) {
+            setBpm(selectedBgmData.bpm);
+        }
+    }, [seqSync, selectedBgmData]);
+
+
+    useEffect(() => {
+        if (!seqEnabled && seqPlaying) setSeqPlaying(false);
+    }, [seqEnabled, seqPlaying]);
+
+    useEffect(() => {
+        if (!seqPlaying) {
+            if (schedulerRef.current) {
+                clearInterval(schedulerRef.current);
+                schedulerRef.current = null;
+            }
+            return;
+        }
+        const ctx = audioCtxRef.current;
+        if (!ctx) return;
+
+        const stepDuration = () => (60 / Math.max(40, bpmRef.current)) / 4;
+        const lookaheadMs = 25;
+        const scheduleAhead = 0.1;
+
+        const tick = () => {
+            const stepSec = stepDuration();
+            while (nextStepTimeRef.current < ctx.currentTime + scheduleAhead) {
+                const step = currentStepRef.current;
+                const rowSteps = seqStepsRef.current;
+                const rowTracks = seqTracksRef.current;
+                for (let i = 0; i < rowSteps.length; i++) {
+                    if (rowSteps[i]?.[step]) {
+                        const id = rowTracks[i];
+                        const voice = id ? voiceByIdRef.current.get(id) : null;
+                        if (voice) {
+                            playSoundRef.current(voice.file, voice.id, 'oneshot', null, nextStepTimeRef.current);
+                        }
+                    }
+                }
+                nextStepTimeRef.current += stepSec;
+                currentStepRef.current = (step + 1) % 16;
+                setSeqStepIndex(currentStepRef.current);
+            }
+        };
+
+        schedulerRef.current = setInterval(tick, lookaheadMs);
+        return () => {
+            if (schedulerRef.current) {
+                clearInterval(schedulerRef.current);
+                schedulerRef.current = null;
+            }
+        };
+    }, [seqPlaying, audioCtxRef]);
+
+    const handleSeqStart = () => {
+        const ctx = audioCtxRef.current;
+        if (!ctx) return;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const stepSec = (60 / Math.max(40, bpm)) / 4;
+        let startAt = ctx.currentTime;
+        if (seqSync && selectedBgmData && selectedBgmData.downbeatOffsetSec != null) {
+            const bgm = bgmRef.current;
+            if (bgm && !bgm.paused) {
+                const offset = selectedBgmData.downbeatOffsetSec;
+                const barSec = stepSec * 16;
+                if (bgm.currentTime < offset) {
+                    startAt = ctx.currentTime + (offset - bgm.currentTime);
+                } else {
+                    const since = bgm.currentTime - offset;
+                    const toNext = barSec - (since % barSec);
+                    startAt = ctx.currentTime + (toNext === barSec ? 0 : toNext);
+                }
+            }
+        }
+        currentStepRef.current = 0;
+        nextStepTimeRef.current = startAt;
+        setSeqStepIndex(0);
+        setSeqPlaying(true);
+    };
+
+    const handleSeqStop = () => {
+        setSeqPlaying(false);
+        setSeqStepIndex(0);
+    };
+
+    const handleTrackChange = (row, id) => {
+        const next = [...seqTracks];
+        next[row] = id || null;
+        setSeqTracks(next);
+    };
+
+    const handleToggleStep = (row, step) => {
+        setSeqSteps(prev => {
+            const next = prev.map(r => r.slice());
+            next[row][step] = !next[row][step];
+            return next;
+        });
+    };
+
     return (
         <div className="app-container" style={appStyle}>
             <LoadingOverlay isLoading={isLoading} progress={progress} />
@@ -245,6 +380,8 @@ function App() {
                 showPro={showPro}
                 onTogglePro={() => setShowPro(!showPro)}
                 selectedBgmData={selectedBgmData}
+                showSeq={seqEnabled}
+                onToggleSeq={() => setSeqEnabled(!seqEnabled)}
             />
 
             {showPro && (
@@ -301,6 +438,25 @@ function App() {
                 />
             )}
 
+            {seqEnabled && (
+                <StepSequencer
+                    tracks={seqTracks}
+                    steps={seqSteps}
+                    options={voiceOptions}
+                    onTrackChange={handleTrackChange}
+                    onToggleStep={handleToggleStep}
+                    isPlaying={seqPlaying}
+                    onStart={handleSeqStart}
+                    onStop={handleSeqStop}
+                    currentStep={seqStepIndex}
+                    syncEnabled={seqSync}
+                    onToggleSync={() => setSeqSync(prev => !prev)}
+                    bpm={bpm}
+                    onBpmChange={(value) => { if (!seqSync && value >= 40 && value <= 300) setBpm(value); }}
+                    onResetSteps={() => setSeqSteps(Array.from({ length: 4 }, () => Array(16).fill(false)))}
+                />
+            )}
+
             <CharacterTabs character={character} onSelectCharacter={setCharacter} />
 
             <SoundBoard
@@ -323,3 +479,16 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+

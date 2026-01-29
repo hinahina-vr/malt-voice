@@ -153,10 +153,11 @@ export const useAudioEngine = ({
         reverbNode.current.buffer = buf;
     }, [reverbDecay]);
 
-    const playSound = (soundFile, id, forcedMode = null, forcedGrain = null) => {
+    const playSound = (soundFile, id, forcedMode = null, forcedGrain = null, startTime = null) => {
         const ctx = audioCtxRef.current;
         if (!ctx) return;
         if (ctx.state === 'suspended') ctx.resume();
+        const startAt = startTime ?? ctx.currentTime;
 
         let mode = forcedMode;
         if (!mode) {
@@ -213,7 +214,7 @@ export const useAudioEngine = ({
                 src._customGrain = src.loopEnd;
                 activeLoops.current[id] = { src, gain: gainNode };
                 playheadInfo.current[id] = {
-                    startTime: ctx.currentTime,
+                    startTime: startAt,
                     durationSec: (src.loopEnd || grainSize) / playbackRate,
                     loop: true,
                     mode: 'drill'
@@ -223,7 +224,7 @@ export const useAudioEngine = ({
                 src.loop = true;
                 activeLoops.current[id] = { src, gain: gainNode };
                 playheadInfo.current[id] = {
-                    startTime: ctx.currentTime,
+                    startTime: startAt,
                     durationSec: buffer.duration / playbackRate,
                     loop: true,
                     mode: 'loop'
@@ -241,12 +242,13 @@ export const useAudioEngine = ({
                 }
                 setPlayingSounds(p => ({ ...p, [id]: 'oneshot' }));
                 playheadInfo.current[id] = {
-                    startTime: ctx.currentTime,
+                    startTime: startAt,
                     durationSec: buffer.duration / playbackRate,
                     loop: false,
                     mode: 'oneshot'
                 };
                 const durationMs = Math.max(60, (buffer.duration / playbackRate) * 1000);
+                const delayMs = Math.max(0, (startAt - ctx.currentTime) * 1000);
                 if (oneshotTimeouts.current[id]) clearTimeout(oneshotTimeouts.current[id]);
                 oneshotTimeouts.current[id] = setTimeout(() => {
                     setPlayingSounds(p => {
@@ -259,7 +261,7 @@ export const useAudioEngine = ({
                     });
                     delete oneshotTimeouts.current[id];
                     delete playheadInfo.current[id];
-                }, durationMs);
+                }, durationMs + delayMs);
             }
 
             src.connect(gainNode);
@@ -289,7 +291,7 @@ export const useAudioEngine = ({
                 };
             }
 
-            src.start(0);
+            src.start(startAt);
         }
     };
 
