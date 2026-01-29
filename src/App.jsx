@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useCallback, useMemo, useState } from 'react';
 import { voices, bgmList } from './data/assets';
 import './index.css';
 
@@ -9,46 +9,77 @@ import ProPanel from './components/ProPanel';
 import CharacterTabs from './components/CharacterTabs';
 import SoundBoard from './components/SoundBoard';
 import FooterControls from './components/FooterControls';
+import StepSequencer from './components/StepSequencer';
 
 import { useAudioEngine } from './hooks/useAudioEngine';
 import { useAudioUnlock } from './hooks/useAudioUnlock';
 import { useBgmPlayer } from './hooks/useBgmPlayer';
-import { encodeSettings, decodeSettings } from './utils/settingsCodec';
+import { useAudioSettings } from './hooks/useAudioSettings';
+import { useSequencer } from './hooks/useSequencer';
+import { useSettingsRestore } from './hooks/useSettingsRestore';
+import { useTempo } from './hooks/useTempo';
+import { buildShareTweetUrl, buildShareUrl } from './utils/shareUtils';
+import { getAppThemeStyle } from './utils/themeUtils';
+import { buildVoiceOptions } from './utils/voiceUtils';
 
 function App() {
     const [character, setCharacter] = useState('hinahina');
     const [currentBgm, setCurrentBgm] = useState(bgmList[0].id);
     const [volume, setVolume] = useState(1);
     const [playingSounds, setPlayingSounds] = useState({});
-
-    // PRO State
     const [showPro, setShowPro] = useState(false);
-    const [filterType, setFilterType] = useState('lowpass');
-    const [filterFreq, setFilterFreq] = useState(100);
-    const [filterQ, setFilterQ] = useState(1);
-    const [eqLow, setEqLow] = useState(0);
-    const [eqMid, setEqMid] = useState(0);
-    const [eqHigh, setEqHigh] = useState(0);
-
-    // SPATIAL EFFECTS State
-    const [reverbMix, setReverbMix] = useState(0);
-    const [reverbDecay, setReverbDecay] = useState(2.0);
-    const [echoMix, setEchoMix] = useState(0);
-    const [echoTime, setEchoTime] = useState(0.3);
-    const [echoFeedback, setEchoFeedback] = useState(0.4);
-    const [playbackRate, setPlaybackRate] = useState(1.0);
-    const [loopMode, setLoopMode] = useState(false);
-    const [drillMode, setDrillMode] = useState(false);
-    const [grainSize, setGrainSize] = useState(0.4);
-    const [restartOnClick, setRestartOnClick] = useState(false);
-
-    // BPM Sync
-    const [bpm, setBpm] = useState(120);
-    const [tapTimes, setTapTimes] = useState([]);
     const [loopVolumes, setLoopVolumes] = useState({});
 
     const [modalOpen, setModalOpen] = useState(false);
     const [pendingTriggers, setPendingTriggers] = useState([]); // Array of {sound, mode}
+
+    const {
+        filterType,
+        setFilterType,
+        filterFreq,
+        setFilterFreq,
+        filterQ,
+        setFilterQ,
+        eqLow,
+        setEqLow,
+        eqMid,
+        setEqMid,
+        eqHigh,
+        setEqHigh,
+        reverbMix,
+        setReverbMix,
+        reverbDecay,
+        setReverbDecay,
+        echoMix,
+        setEchoMix,
+        echoTime,
+        setEchoTime,
+        echoFeedback,
+        setEchoFeedback,
+        playbackRate,
+        setPlaybackRate,
+        timeStretch,
+        setTimeStretch,
+        loopMode,
+        drillMode,
+        grainSize,
+        setGrainSize,
+        restartOnClick,
+        toggleLoopMode,
+        toggleDrillMode,
+        toggleRestartOnClick,
+        resetAudioSettings,
+        applySettings
+    } = useAudioSettings();
+
+    const {
+        bpm,
+        setBpm,
+        resetTempo
+    } = useTempo({
+        onPlaybackRateChange: setPlaybackRate,
+        onGrainSizeChange: setGrainSize
+    });
 
     const {
         audioCtxRef,
@@ -72,6 +103,7 @@ function App() {
         echoTime,
         echoFeedback,
         playbackRate,
+        timeStretch,
         loopMode,
         drillMode,
         restartOnClick,
@@ -81,64 +113,85 @@ function App() {
     });
 
     useAudioUnlock(audioCtxRef);
-    useBgmPlayer({ bgmList, currentBgm, volume });
+    const bgmRef = useBgmPlayer({ bgmList, currentBgm, volume });
 
-    useEffect(() => {
-        const p = new URLSearchParams(window.location.search).get('p');
-        if (!p) return;
+    const selectedBgmData = useMemo(
+        () => bgmList.find((bgm) => bgm.id === currentBgm),
+        [currentBgm]
+    );
 
-        const decoded = decodeSettings(p, voices);
-        if (!decoded.ok) {
-            if (decoded.version !== undefined) {
-                console.warn("Unknown settings version or old URL", decoded.version);
-                alert("URLの形式が古いため読み込めませんでした。\n新しいURLを作成してください。");
-            } else if (decoded.error) {
-                console.error("Failed to decode settings", decoded.error);
-            }
-            return;
-        }
+    const voiceOptions = useMemo(() => buildVoiceOptions(voices), [voices]);
 
-        const { settings, grainSize: decodedGrainSize, restored } = decoded;
+    const {
+        seqEnabled,
+        setSeqEnabled,
+        seqPlaying,
+        seqSync,
+        setSeqSync,
+        seqTracks,
+        seqSteps,
+        seqStepIndex,
+        seqTrackFx,
+        seqTrackMutes,
+        seqTrackRetrig,
+        handleSeqStart,
+        handleSeqStop,
+        handleTrackChange,
+        handleTrackFxChange,
+        handleToggleMute,
+        handleToggleRetrig,
+        handleToggleStep,
+        handleBpmChange,
+        resetSteps,
+        applySequencerSettings
+    } = useSequencer({
+        voices,
+        audioCtxRef,
+        bgmRef,
+        playSound,
+        selectedBgmData,
+        bpm,
+        setBpm
+    });
 
+    const applyDecodedSettings = useCallback((decoded) => {
+        const { settings, grainSize: decodedGrainSize } = decoded;
         setBpm(settings.bpm);
-        setPlaybackRate(settings.playbackRate);
-        setEchoFeedback(settings.echoFeedback);
-        setEchoTime(settings.echoTime);
-        setEchoMix(settings.echoMix);
-        setReverbDecay(settings.reverbDecay);
-        setReverbMix(settings.reverbMix);
-        setEqLow(settings.eqLow);
-        setEqMid(settings.eqMid);
-        setEqHigh(settings.eqHigh);
-        setFilterQ(settings.filterQ);
-        setFilterFreq(settings.filterFreq);
-        setFilterType(settings.filterType);
-        setLoopMode(settings.loopMode);
-        setDrillMode(settings.drillMode);
-        setShowPro(true);
-        setGrainSize(decodedGrainSize);
-
-        if (restored.length > 0) {
-            setPendingTriggers(restored);
-            setCharacter('hinahina');
-            setModalOpen(true);
+        applySettings({ settings, grainSize: decodedGrainSize });
+        if (decoded.seq) {
+            applySequencerSettings(decoded.seq);
         }
+        setShowPro(true);
+    }, [applySettings, applySequencerSettings, setBpm]);
 
-        window.history.replaceState({}, '', window.location.pathname);
+    const restoreTriggers = useCallback((restored) => {
+        setPendingTriggers(restored);
+        setCharacter('hinahina');
+        setModalOpen(true);
     }, []);
 
-    const handleModalPlay = () => {
+    useSettingsRestore({
+        voices,
+        onApplySettings: applyDecodedSettings,
+        onRestoreTriggers: restoreTriggers
+    });
+
+    const handleModalPlay = useCallback(() => {
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
             audioCtxRef.current.resume();
         }
-        pendingTriggers.forEach(item => {
+        pendingTriggers.forEach((item) => {
             playSound(item.sound.file, item.sound.id, item.mode, item.grain);
         });
         setModalOpen(false);
-    };
+    }, [audioCtxRef, pendingTriggers, playSound]);
 
-    const handleShare = () => {
-        const code = encodeSettings({
+    const handleSoundBoardPlay = useCallback((soundFile, id, forcedMode = null, forcedGrain = null) => {
+        playSound(soundFile, id, forcedMode, forcedGrain);
+    }, [playSound]);
+
+    const handleShare = useCallback(() => {
+        const shareUrl = buildShareUrl({
             voices,
             playingSounds,
             activeLoopsRef: activeLoops,
@@ -155,81 +208,65 @@ function App() {
             echoTime,
             echoFeedback,
             playbackRate,
+            timeStretch,
             bpm,
             loopMode,
-            drillMode
+            drillMode,
+            seqTracks,
+            seqSteps,
+            seqTrackMutes,
+            seqTrackRetrig
         });
-        const url = `${window.location.origin}${window.location.pathname}?p=${code}`;
-        const text = `【モルトバトルサンプラーからのお知らせ】\nドゥンドゥンしようねえ\n${url}\n\n#モルトバトルサンプラー`;
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+        const twitterUrl = buildShareTweetUrl(shareUrl);
         window.open(twitterUrl, '_blank');
-    };
+    }, [
+        activeLoops,
+        bpm,
+        drillMode,
+        echoFeedback,
+        echoMix,
+        echoTime,
+        eqHigh,
+        eqLow,
+        eqMid,
+        filterFreq,
+        filterQ,
+        filterType,
+        grainSize,
+        loopMode,
+        playbackRate,
+        timeStretch,
+        playingSounds,
+        reverbDecay,
+        reverbMix,
+        seqSteps,
+        seqTrackMutes,
+        seqTrackRetrig,
+        seqTracks,
+        voices
+    ]);
 
-    const handleTap = () => {
-        const now = Date.now();
-        const times = tapTimes.filter(t => now - t < 2000);
-        times.push(now);
+    const resetSettings = useCallback(() => {
+        resetAudioSettings();
+        resetTempo();
 
-        if (times.length >= 3) {
-            const intervals = [];
-            for (let i = 1; i < times.length; i++) {
-                intervals.push(times[i] - times[i - 1]);
-            }
-            const avgMs = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-            const newBpm = Math.round(60000 / avgMs);
-
-            if (newBpm > 40 && newBpm < 300) {
-                setBpm(newBpm);
-                setPlaybackRate(Number((newBpm / 120).toFixed(2)));
-                const note32 = (60 / newBpm) / 8;
-                setGrainSize(Number(note32.toFixed(3)));
-            }
-            if (times.length > 5) times.shift();
-        }
-        setTapTimes(times);
-    };
-
-    const resetSettings = () => {
-        setFilterType('lowpass');
-        setFilterFreq(100);
-        setFilterQ(1);
-        setEqLow(0);
-        setEqMid(0);
-        setEqHigh(0);
-        setReverbMix(0);
-        setReverbDecay(2.0);
-        setEchoMix(0);
-        setEchoTime(0.3);
-        setEchoFeedback(0.4);
-        setPlaybackRate(1.0);
-        setBpm(120);
-        setTapTimes([]);
-        setLoopMode(false);
-        setDrillMode(false);
-        setGrainSize(0.4);
-        setRestartOnClick(false);
-
-        Object.values(activeLoops.current).forEach(item => {
+        Object.values(activeLoops.current).forEach((item) => {
             try { item.src.stop(); } catch (e) { }
         });
         activeLoops.current = {};
         setPlayingSounds({});
 
         window.history.replaceState({}, '', window.location.pathname);
-    };
+    }, [activeLoops, resetAudioSettings, resetTempo]);
 
-    const handleLoopVolumeChange = (id, value) => {
-        setLoopVolumes(prev => ({ ...prev, [id]: value }));
+    const handleLoopVolumeChange = useCallback((id, value) => {
+        setLoopVolumes((prev) => ({ ...prev, [id]: value }));
         if (activeLoops.current[id] && activeLoops.current[id].gain) {
             activeLoops.current[id].gain.gain.value = value;
         }
-    };
+    }, [activeLoops]);
 
-    const appStyle = {
-        '--primary-color': character === 'hinahina' ? 'var(--hina-color)' : character === 'kai' ? 'var(--kai-color)' : 'var(--others-color)',
-        '--theme-bg': character === 'hinahina' ? 'rgba(255, 105, 180, 0.05)' : character === 'kai' ? 'rgba(92, 219, 211, 0.05)' : 'rgba(255, 215, 0, 0.05)'
-    };
-    const selectedBgmData = bgmList.find(b => b.id === currentBgm);
+    const appStyle = useMemo(() => getAppThemeStyle(character), [character]);
 
     return (
         <div className="app-container" style={appStyle}>
@@ -245,6 +282,8 @@ function App() {
                 showPro={showPro}
                 onTogglePro={() => setShowPro(!showPro)}
                 selectedBgmData={selectedBgmData}
+                showSeq={seqEnabled}
+                onToggleSeq={() => setSeqEnabled(!seqEnabled)}
             />
 
             {showPro && (
@@ -263,25 +302,14 @@ function App() {
                     onEqLowChange={setEqLow}
                     loopMode={loopMode}
                     drillMode={drillMode}
-                    onToggleLoopMode={() => {
-                        const next = !loopMode;
-                        setLoopMode(next);
-                        setDrillMode(false);
-                        if (next) setRestartOnClick(false);
-                    }}
-                    onToggleDrillMode={() => {
-                        const next = !drillMode;
-                        setDrillMode(next);
-                        setLoopMode(false);
-                        if (next) setRestartOnClick(false);
-                    }}
+                    onToggleLoopMode={toggleLoopMode}
+                    onToggleDrillMode={toggleDrillMode}
                     restartOnClick={restartOnClick}
-                    onToggleRestartOnClick={() => {
-                        if (loopMode || drillMode) return;
-                        setRestartOnClick(!restartOnClick);
-                    }}
+                    onToggleRestartOnClick={toggleRestartOnClick}
                     playbackRate={playbackRate}
                     onPlaybackRateChange={setPlaybackRate}
+                    timeStretch={timeStretch}
+                    onTimeStretchChange={setTimeStretch}
                     grainSize={grainSize}
                     onGrainSizeChange={setGrainSize}
                     reverbMix={reverbMix}
@@ -301,13 +329,38 @@ function App() {
                 />
             )}
 
+            {seqEnabled && (
+                <StepSequencer
+                    tracks={seqTracks}
+                    steps={seqSteps}
+                    options={voiceOptions}
+                    onTrackChange={handleTrackChange}
+                    trackMutes={seqTrackMutes}
+                    onToggleMute={handleToggleMute}
+                    trackRetrig={seqTrackRetrig}
+                    onToggleRetrig={handleToggleRetrig}
+                    onToggleStep={handleToggleStep}
+                    isPlaying={seqPlaying}
+                    onStart={handleSeqStart}
+                    onStop={handleSeqStop}
+                    currentStep={seqStepIndex}
+                    syncEnabled={seqSync}
+                    onToggleSync={() => setSeqSync((prev) => !prev)}
+                    bpm={bpm}
+                    onBpmChange={handleBpmChange}
+                    onResetSteps={resetSteps}
+                    trackFx={seqTrackFx}
+                    onTrackFxChange={handleTrackFxChange}
+                />
+            )}
+
             <CharacterTabs character={character} onSelectCharacter={setCharacter} />
 
             <SoundBoard
                 voices={voices}
                 character={character}
                 playingSounds={playingSounds}
-                onPlaySound={playSound}
+                onPlaySound={handleSoundBoardPlay}
                 compact={showPro}
                 audioBuffers={audioBuffers}
                 loadProgress={progress}

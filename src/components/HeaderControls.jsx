@@ -9,7 +9,9 @@ const HeaderControls = ({
     onVolumeChange,
     showPro,
     onTogglePro,
-    selectedBgmData
+    selectedBgmData,
+    showSeq,
+    onToggleSeq
 }) => {
     return (
         <header>
@@ -48,6 +50,9 @@ const HeaderControls = ({
 
                     <button className={`pro-toggle-btn ${showPro ? 'active' : ''}`} onClick={onTogglePro}>
                         PRO
+                    </button>
+                    <button className={`seq-toggle-btn ${showSeq ? 'active' : ''}`} onClick={onToggleSeq}>
+                        SEQ
                     </button>
                 </div>
             </div>

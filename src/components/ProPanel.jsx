@@ -143,6 +143,8 @@ const ProPanel = ({
     onToggleRestartOnClick,
     playbackRate,
     onPlaybackRateChange,
+    timeStretch,
+    onTimeStretchChange,
     grainSize,
     onGrainSizeChange,
     reverbMix,
@@ -233,6 +235,15 @@ const ProPanel = ({
                         step="0.1"
                         value={playbackRate}
                         onChange={onPlaybackRateChange}
+                    />
+                    <SliderRow
+                        label="TIME"
+                        valueLabel={`x${timeStretch}`}
+                        min="0.5"
+                        max="2.0"
+                        step="0.1"
+                        value={timeStretch}
+                        onChange={onTimeStretchChange}
                     />
                     {drillMode && (
                         <SliderRow

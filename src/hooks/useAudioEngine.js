@@ -15,6 +15,7 @@ export const useAudioEngine = ({
     echoTime,
     echoFeedback,
     playbackRate,
+    timeStretch,
     loopMode,
     drillMode,
     restartOnClick,
@@ -153,10 +154,44 @@ export const useAudioEngine = ({
         reverbNode.current.buffer = buf;
     }, [reverbDecay]);
 
-    const playSound = (soundFile, id, forcedMode = null, forcedGrain = null) => {
+    const stopActiveOneshot = (id) => {
+        const current = activeOneshots.current[id];
+        if (!current) return;
+        const sources = Array.isArray(current)
+            ? current
+            : current?.sources
+                ? current.sources
+                : [current];
+        sources.forEach((src) => {
+            try { src.stop(); } catch (e) { }
+        });
+        delete activeOneshots.current[id];
+    };
+
+    const scheduleOneshotCleanup = (id, durationMs, delayMs) => {
+        if (oneshotTimeouts.current[id]) {
+            clearTimeout(oneshotTimeouts.current[id]);
+        }
+        oneshotTimeouts.current[id] = setTimeout(() => {
+            setPlayingSounds(p => {
+                if (p[id] === 'oneshot') {
+                    const next = { ...p };
+                    delete next[id];
+                    return next;
+                }
+                return p;
+            });
+            delete oneshotTimeouts.current[id];
+            delete playheadInfo.current[id];
+            stopActiveOneshot(id);
+        }, durationMs + delayMs);
+    };
+
+    const playSound = (soundFile, id, forcedMode = null, forcedGrain = null, startTime = null, trackFx = null, forceRetrig = false) => {
         const ctx = audioCtxRef.current;
         if (!ctx) return;
         if (ctx.state === 'suspended') ctx.resume();
+        const startAt = startTime ?? ctx.currentTime;
 
         let mode = forcedMode;
         if (!mode) {
@@ -180,8 +215,7 @@ export const useAudioEngine = ({
                 }
             }
             if (mode === 'oneshot' && restartOnClick && activeOneshots.current[id]) {
-                try { activeOneshots.current[id].stop(); } catch (e) { }
-                delete activeOneshots.current[id];
+                stopActiveOneshot(id);
                 delete playheadInfo.current[id];
                 if (oneshotTimeouts.current[id]) {
                     clearTimeout(oneshotTimeouts.current[id]);
@@ -198,13 +232,131 @@ export const useAudioEngine = ({
 
         const buffer = audioBuffers.current[soundFile];
         if (buffer) {
-            const src = ctx.createBufferSource();
-            src.buffer = buffer;
-            src.playbackRate.value = playbackRate;
+            const trackRate = trackFx && trackFx.playbackRate ? trackFx.playbackRate : 1.0;
+            const trackStretch = trackFx && trackFx.timeStretch ? trackFx.timeStretch : 1.0;
+            const effectiveRate = playbackRate * trackRate;
+            const effectiveStretch = timeStretch * trackStretch;
 
             const gainNode = ctx.createGain();
             const initialVol = loopVolumes[id] !== undefined ? loopVolumes[id] : 1.0;
-            gainNode.gain.value = initialVol;
+            const trackVol = trackFx && trackFx.volume !== undefined ? trackFx.volume : 1.0;
+            gainNode.gain.value = initialVol * trackVol;
+
+            let outputNode = gainNode;
+            if (trackFx) {
+                const tLow = ctx.createBiquadFilter();
+                tLow.type = 'lowshelf';
+                tLow.frequency.value = 200;
+                tLow.gain.value = trackFx.eqLow ?? 0;
+
+                const tMid = ctx.createBiquadFilter();
+                tMid.type = 'peaking';
+                tMid.frequency.value = 1000;
+                tMid.gain.value = trackFx.eqMid ?? 0;
+
+                const tHigh = ctx.createBiquadFilter();
+                tHigh.type = 'highshelf';
+                tHigh.frequency.value = 3000;
+                tHigh.gain.value = trackFx.eqHigh ?? 0;
+
+                const tFilter = ctx.createBiquadFilter();
+                tFilter.type = trackFx.filterType || 'lowpass';
+                tFilter.Q.value = trackFx.filterQ ?? 1;
+                tFilter.frequency.value = mapFilterFrequency(trackFx.filterFreq ?? 100);
+
+                gainNode.connect(tLow);
+                tLow.connect(tMid);
+                tMid.connect(tHigh);
+                tHigh.connect(tFilter);
+                outputNode = tFilter;
+
+                if (trackFx.reverbMix && trackFx.reverbMix > 0 && masterGain.current) {
+                    const rev = ctx.createConvolver();
+                    rev.buffer = createImpulseResponse(ctx, 2.0, trackFx.reverbDecay ?? 2.0, false);
+                    const revGain = ctx.createGain();
+                    revGain.gain.value = trackFx.reverbMix / 100;
+                    tFilter.connect(revGain);
+                    revGain.connect(rev);
+                    rev.connect(masterGain.current);
+                }
+
+                if (trackFx.echoMix && trackFx.echoMix > 0 && masterGain.current) {
+                    const dly = ctx.createDelay(5.0);
+                    dly.delayTime.value = trackFx.echoTime ?? 0.3;
+                    const dlyFb = ctx.createGain();
+                    dlyFb.gain.value = trackFx.echoFeedback ?? 0.4;
+                    const dlyGain = ctx.createGain();
+                    dlyGain.gain.value = trackFx.echoMix / 100;
+
+                    tFilter.connect(dlyGain);
+                    dlyGain.connect(dly);
+                    dly.connect(masterGain.current);
+
+                    dly.connect(dlyFb);
+                    dlyFb.connect(dly);
+                }
+            }
+
+            if (mode === 'oneshot' && effectiveStretch !== 1) {
+                if (forceRetrig && activeOneshots.current[id]) {
+                    stopActiveOneshot(id);
+                    delete playheadInfo.current[id];
+                    if (oneshotTimeouts.current[id]) {
+                        clearTimeout(oneshotTimeouts.current[id]);
+                        delete oneshotTimeouts.current[id];
+                    }
+                }
+                const grainSizeSec = Math.max(0.03, Math.min(0.12, buffer.duration / 6));
+                const sourceHop = grainSizeSec * effectiveRate;
+                const outputHop = grainSizeSec * effectiveStretch;
+                const grainFade = Math.min(0.01, grainSizeSec / 2);
+                const sources = [];
+                let sourcePos = 0;
+                let outputTime = startAt;
+
+                while (sourcePos < buffer.duration) {
+                    const grainDur = Math.min(grainSizeSec, buffer.duration - sourcePos);
+                    const grainSrc = ctx.createBufferSource();
+                    grainSrc.buffer = buffer;
+                    grainSrc.playbackRate.value = effectiveRate;
+
+                    const grainGain = ctx.createGain();
+                    grainGain.gain.setValueAtTime(0, outputTime);
+                    grainGain.gain.linearRampToValueAtTime(1, outputTime + grainFade);
+                    grainGain.gain.setValueAtTime(1, outputTime + Math.max(grainFade, grainDur - grainFade));
+                    grainGain.gain.linearRampToValueAtTime(0, outputTime + grainDur);
+
+                    grainSrc.connect(grainGain);
+                    grainGain.connect(gainNode);
+
+                    grainSrc.start(outputTime, sourcePos, grainDur);
+                    sources.push(grainSrc);
+
+                    sourcePos += sourceHop;
+                    outputTime += outputHop;
+                }
+
+                setPlayingSounds(p => ({ ...p, [id]: 'oneshot' }));
+                playheadInfo.current[id] = {
+                    startTime: startAt,
+                    durationSec: (buffer.duration / effectiveRate) * effectiveStretch,
+                    loop: false,
+                    mode: 'oneshot'
+                };
+
+                const durationMs = Math.max(60, ((buffer.duration / effectiveRate) * effectiveStretch) * 1000);
+                const delayMs = Math.max(0, (startAt - ctx.currentTime) * 1000);
+                scheduleOneshotCleanup(id, durationMs, delayMs);
+                activeOneshots.current[id] = { sources, isGranular: true };
+
+                if (eqNodes.current.low) outputNode.connect(eqNodes.current.low);
+                else outputNode.connect(ctx.destination);
+                return;
+            }
+
+            const src = ctx.createBufferSource();
+            src.buffer = buffer;
+            src.playbackRate.value = effectiveRate;
 
             if (mode === 'drill') {
                 src.loop = true;
@@ -213,8 +365,8 @@ export const useAudioEngine = ({
                 src._customGrain = src.loopEnd;
                 activeLoops.current[id] = { src, gain: gainNode };
                 playheadInfo.current[id] = {
-                    startTime: ctx.currentTime,
-                    durationSec: (src.loopEnd || grainSize) / playbackRate,
+                    startTime: startAt,
+                    durationSec: (src.loopEnd || grainSize) / effectiveRate,
                     loop: true,
                     mode: 'drill'
                 };
@@ -223,16 +375,15 @@ export const useAudioEngine = ({
                 src.loop = true;
                 activeLoops.current[id] = { src, gain: gainNode };
                 playheadInfo.current[id] = {
-                    startTime: ctx.currentTime,
-                    durationSec: buffer.duration / playbackRate,
+                    startTime: startAt,
+                    durationSec: buffer.duration / effectiveRate,
                     loop: true,
                     mode: 'loop'
                 };
                 setPlayingSounds(p => ({ ...p, [id]: 'loop' }));
             } else {
-                if (restartOnClick && activeOneshots.current[id]) {
-                    try { activeOneshots.current[id].stop(); } catch (e) { }
-                    delete activeOneshots.current[id];
+                if (forceRetrig && activeOneshots.current[id]) {
+                    stopActiveOneshot(id);
                     delete playheadInfo.current[id];
                     if (oneshotTimeouts.current[id]) {
                         clearTimeout(oneshotTimeouts.current[id]);
@@ -241,31 +392,20 @@ export const useAudioEngine = ({
                 }
                 setPlayingSounds(p => ({ ...p, [id]: 'oneshot' }));
                 playheadInfo.current[id] = {
-                    startTime: ctx.currentTime,
-                    durationSec: buffer.duration / playbackRate,
+                    startTime: startAt,
+                    durationSec: buffer.duration / effectiveRate,
                     loop: false,
                     mode: 'oneshot'
                 };
-                const durationMs = Math.max(60, (buffer.duration / playbackRate) * 1000);
-                if (oneshotTimeouts.current[id]) clearTimeout(oneshotTimeouts.current[id]);
-                oneshotTimeouts.current[id] = setTimeout(() => {
-                    setPlayingSounds(p => {
-                        if (p[id] === 'oneshot') {
-                            const next = { ...p };
-                            delete next[id];
-                            return next;
-                        }
-                        return p;
-                    });
-                    delete oneshotTimeouts.current[id];
-                    delete playheadInfo.current[id];
-                }, durationMs);
+                const durationMs = Math.max(60, (buffer.duration / effectiveRate) * 1000);
+                const delayMs = Math.max(0, (startAt - ctx.currentTime) * 1000);
+                scheduleOneshotCleanup(id, durationMs, delayMs);
             }
 
             src.connect(gainNode);
 
-            if (eqNodes.current.low) gainNode.connect(eqNodes.current.low);
-            else gainNode.connect(ctx.destination);
+            if (eqNodes.current.low) outputNode.connect(eqNodes.current.low);
+            else outputNode.connect(ctx.destination);
 
             if (mode === 'oneshot') {
                 activeOneshots.current[id] = src;
@@ -289,7 +429,7 @@ export const useAudioEngine = ({
                 };
             }
 
-            src.start(0);
+            src.start(startAt);
         }
     };
 

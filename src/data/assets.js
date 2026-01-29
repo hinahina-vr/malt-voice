@@ -62,7 +62,7 @@ export const voices = {
 };
 
 export const bgmList = [
-    { id: "none", label: "OFF", file: null, credit: null },
-    { id: "itsumono", label: "いつもの", file: "itsumono.mp3", credit: "全てが終わる夜に written by しゃろう" },
-    { id: "nougaki", label: "能書き", file: "nougaki.mp3", credit: "古き時代 written by いまたく" },
+    { id: "none", label: "OFF", file: null, credit: null, bpm: null, downbeatOffsetSec: null },
+    { id: "itsumono", label: "いつもの", file: "itsumono.mp3", credit: "全てが終わる夜に written by しゃろう", bpm: 130, downbeatOffsetSec: 0.009 },
+    { id: "nougaki", label: "能書き", file: "nougaki.mp3", credit: "古き時代 written by いまたく", bpm: 92, downbeatOffsetSec: 0.006 },
 ];
