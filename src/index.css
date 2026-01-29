@@ -374,6 +374,12 @@ header {
 
 .seq-row {
     display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.seq-row-main {
+    display: flex;
     align-items: center;
     gap: 0.5rem;
 }
@@ -401,6 +407,60 @@ header {
     padding: 2px 6px;
     font-size: 0.7rem;
     min-width: 120px;
+}
+
+.seq-fx-toggle {
+    border: 1px solid #444;
+    background: #2a2a2a;
+    color: #bbb;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.seq-mute-toggle {
+    border: 1px solid #444;
+    background: #2a2a2a;
+    color: #bbb;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.seq-mute-toggle.active {
+    background: #ef5350;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(239, 83, 80, 0.8);
+}
+
+.seq-retrig-toggle {
+    border: 1px solid #444;
+    background: #2a2a2a;
+    color: #bbb;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.seq-retrig-toggle.active {
+    background: #ffd54f;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(255, 213, 79, 0.8);
+}
+
+.seq-fx-toggle.active {
+    background: #ff8f00;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(255, 143, 0, 0.8);
 }
 
 .seq-steps {
@@ -436,6 +496,36 @@ header {
 .seq-step.current {
     outline: 2px solid #66bb6a;
     outline-offset: -2px;
+}
+
+.seq-fx-panel {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 6px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 0.6rem;
+}
+
+.seq-fx-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.seq-fx-filter select {
+    background: #2a2a2a;
+    color: #ddd;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.65rem;
+}
+
+.seq-fx-row input[type=range] {
+    accent-color: var(--primary-color);
+    height: 6px;
 }
 
 @keyframes slideDown {
@@ -931,6 +1021,31 @@ header {
     .seq-step {
         width: 14px;
         height: 14px;
+    }
+
+    .seq-fx-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .seq-row-main {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.3rem;
+    }
+
+    .seq-track {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 0.35rem;
+    }
+
+    .seq-steps {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .seq-track-label {
+        text-align: left;
     }
 }
 
