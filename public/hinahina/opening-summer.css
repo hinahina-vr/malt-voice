@@ -1,0 +1,839 @@
+.summon-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  isolation: isolate;
+  display: block;
+  overflow: hidden;
+  background: #fff;
+  color: #fff;
+}
+
+.opening-loader,
+.opening-canvas,
+.opening-sky,
+.opening-sunwash,
+.opening-rays,
+.opening-light-wings,
+.opening-petals,
+.opening-sparkles,
+.opening-masthead,
+.opening-haze,
+.opening-wipe {
+  position: absolute;
+  pointer-events: none;
+}
+
+.opening-loader {
+  inset: 0;
+  z-index: 20;
+  overflow: hidden;
+  background-color: #f7fdff;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.42)),
+    url("/hinahina/images/opening-summer-v2.webp");
+  background-position: center;
+  background-size: cover;
+  text-align: center;
+}
+
+.opening-loader::before {
+  position: absolute;
+  inset: -8%;
+  content: "";
+  background: radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.9), transparent 36%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.opening-loader::after {
+  position: absolute;
+  right: 0;
+  bottom: 12%;
+  left: 0;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(62, 171, 211, 0.62), transparent);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+}
+
+.opening-summer-prologue,
+.opening-project-logo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-content: center;
+  opacity: 0;
+}
+
+.opening-summer-prologue p,
+.opening-summer-prologue small {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.opening-summer-prologue {
+  color: #287daa;
+  text-shadow: 0 2px 18px rgba(255, 255, 255, 0.94);
+}
+
+.opening-summer-prologue p {
+  font-family: Georgia, "Times New Roman", "Yu Mincho", serif;
+  font-size: 44px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.opening-summer-prologue p span {
+  color: inherit;
+}
+
+.opening-summer-prologue small {
+  margin-top: 14px;
+  color: #759daf;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.opening-project-logo {
+  padding: 4vh 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.92));
+}
+
+.opening-project-logo img {
+  width: min(920px, 88vw);
+  max-width: 100%;
+  max-height: 76vh;
+  display: block;
+  object-fit: contain;
+}
+
+.opening-canvas,
+.opening-sky,
+.opening-sunwash,
+.opening-rays,
+.opening-light-wings,
+.opening-petals,
+.opening-sparkles,
+.opening-haze,
+.opening-wipe {
+  inset: 0;
+}
+
+.opening-canvas {
+  z-index: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.opening-sky {
+  inset: -3%;
+  background-image: url("/hinahina/images/eyecatch-lively-v7.jpg");
+  background-position: center center;
+  background-size: cover;
+  opacity: 0;
+  transform: scale(1.08);
+  will-change: opacity, transform, filter;
+}
+
+.opening-sunwash {
+  inset: -8%;
+  z-index: 1;
+  background:
+    linear-gradient(105deg, rgba(255, 255, 255, 0.4) 0%, transparent 38%),
+    radial-gradient(circle at 78% 17%, rgba(255, 255, 255, 0.9) 0, rgba(255, 255, 255, 0.2) 17%, transparent 42%);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+.opening-rays {
+  inset: -30% -10%;
+  z-index: 2;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.opening-rays i {
+  position: absolute;
+  top: -10%;
+  width: 9%;
+  height: 150%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  transform: rotate(20deg);
+  transform-origin: top center;
+}
+
+.opening-rays i:nth-child(1) { left: 52%; }
+.opening-rays i:nth-child(2) { left: 65%; width: 14%; }
+.opening-rays i:nth-child(3) { left: 80%; width: 7%; }
+
+.opening-masthead {
+  right: -18px;
+  bottom: 2%;
+  left: auto;
+  z-index: 2;
+  margin: 0;
+  color: transparent;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 190px;
+  font-weight: 900;
+  line-height: 0.78;
+  letter-spacing: 0;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(36px);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+}
+
+.opening-haze {
+  z-index: 3;
+  top: auto;
+  height: 24%;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.32) 48%, transparent 100%);
+  opacity: 0;
+  transform: translateY(35%);
+}
+
+.opening-light-wings {
+  z-index: 5;
+}
+
+.opening-light-wings i {
+  position: absolute;
+  width: 50px;
+  height: 37px;
+  background:
+    radial-gradient(circle at 50% 48%, #fff 0 2px, transparent 3px),
+    linear-gradient(rgba(255, 255, 255, 0.96), rgba(113, 240, 255, 0.5)) center 54% / 2px 58% no-repeat;
+  opacity: 0;
+  filter: drop-shadow(0 0 10px rgba(114, 250, 255, 0.95));
+  transform: translateY(18px) rotate(-8deg) scale(0.72);
+}
+
+.opening-light-wings i::before,
+.opening-light-wings i::after {
+  position: absolute;
+  top: 4%;
+  width: 48%;
+  height: 82%;
+  content: "";
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(116, 247, 255, 0.35) 54%, rgba(255, 143, 215, 0.42));
+  clip-path: polygon(100% 48%, 72% 3%, 23% 0, 0 28%, 25% 58%, 8% 88%, 55% 100%);
+}
+
+.opening-light-wings i::before {
+  right: 49%;
+  transform: rotate(-10deg);
+  transform-origin: right bottom;
+}
+
+.opening-light-wings i::after {
+  left: 49%;
+  transform: scaleX(-1) rotate(-10deg);
+  transform-origin: left bottom;
+}
+
+.opening-light-wings .wing-1 { top: 9%; left: 8%; }
+.opening-light-wings .wing-2 { top: 18%; left: 36%; width: 38px; height: 28px; }
+.opening-light-wings .wing-3 { top: 10%; right: 19%; width: 58px; height: 43px; }
+.opening-light-wings .wing-4 { top: 30%; right: 6%; width: 34px; height: 25px; }
+.opening-light-wings .wing-5 { top: 42%; left: 47%; width: 29px; height: 22px; }
+
+.opening-petals,
+.opening-sparkles {
+  z-index: 6;
+}
+
+.opening-petals i {
+  position: absolute;
+  width: 17px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 95% 12% 95% 12%;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.72);
+  opacity: 0;
+}
+
+.opening-petals i:nth-child(1) { top: 13%; left: 19%; }
+.opening-petals i:nth-child(2) { top: 22%; left: 58%; width: 12px; }
+.opening-petals i:nth-child(3) { top: 39%; left: 81%; }
+.opening-petals i:nth-child(4) { top: 56%; left: 11%; width: 13px; }
+.opening-petals i:nth-child(5) { top: 63%; left: 67%; }
+.opening-petals i:nth-child(6) { top: 76%; left: 35%; width: 11px; }
+.opening-petals i:nth-child(7) { top: 32%; left: 43%; width: 9px; }
+.opening-petals i:nth-child(8) { top: 68%; left: 89%; width: 14px; }
+
+.opening-sparkles i {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+}
+
+.opening-sparkles i::before,
+.opening-sparkles i::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: "";
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 9px rgba(255, 255, 255, 0.95);
+  transform: translate(-50%, -50%);
+}
+
+.opening-sparkles i::before { width: 2px; height: 100%; }
+.opening-sparkles i::after { width: 100%; height: 2px; }
+.opening-sparkles i:nth-child(1) { top: 15%; left: 29%; }
+.opening-sparkles i:nth-child(2) { top: 25%; left: 72%; transform: scale(0.65); }
+.opening-sparkles i:nth-child(3) { top: 44%; left: 53%; transform: scale(0.78); }
+.opening-sparkles i:nth-child(4) { top: 52%; left: 91%; transform: scale(0.55); }
+.opening-sparkles i:nth-child(5) { top: 61%; left: 24%; transform: scale(0.66); }
+.opening-sparkles i:nth-child(6) { top: 70%; left: 74%; }
+.opening-sparkles i:nth-child(7) { top: 34%; left: 14%; transform: scale(0.52); }
+.opening-sparkles i:nth-child(8) { top: 81%; left: 46%; transform: scale(0.82); }
+.opening-sparkles i:nth-child(9) { top: 8%; left: 87%; transform: scale(0.62); }
+.opening-sparkles i:nth-child(10) { top: 48%; left: 36%; transform: scale(0.48); }
+
+.opening-stage {
+  position: relative;
+  z-index: 8;
+  width: min(1180px, calc(100% - 96px));
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 80px 40px 72px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.opening-prelude {
+  position: absolute;
+  top: 42px;
+  right: 40px;
+  left: 40px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 1px 12px rgba(7, 83, 129, 0.45);
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.opening-prelude i {
+  width: 58px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 0 7px rgba(255, 255, 255, 0.75);
+}
+
+.opening-title-lockup {
+  position: relative;
+  width: min(650px, 100%);
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.opening-title-kicker,
+.opening-title-lockup h2,
+.opening-title-sub,
+.opening-copy,
+.opening-footer {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.opening-title-kicker {
+  margin-bottom: 12px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-shadow: 0 2px 14px rgba(5, 70, 116, 0.58);
+}
+
+.opening-title-lockup h2 {
+  display: block;
+  line-height: 1;
+}
+
+.opening-title-main {
+  display: block;
+  color: #fff;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: 112px;
+  font-weight: 700;
+  line-height: 0.94;
+  text-shadow: 0 4px 3px rgba(24, 118, 169, 0.22), 0 14px 38px rgba(5, 74, 121, 0.42);
+}
+
+.opening-title-echo {
+  display: block;
+  margin-top: 11px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 12px rgba(5, 74, 121, 0.52);
+}
+
+.opening-title-sub {
+  width: min(520px, 100%);
+  margin-top: 13px;
+  padding-top: 10px;
+  color: rgba(255, 255, 255, 0.92);
+  border-top: 1px solid rgba(255, 255, 255, 0.72);
+  font-size: 9px;
+  font-weight: 800;
+  text-shadow: 0 2px 12px rgba(5, 74, 121, 0.52);
+}
+
+.opening-copy {
+  margin-top: 43px;
+  color: #fff;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.34;
+  text-shadow: 0 3px 18px rgba(4, 69, 117, 0.62);
+}
+
+.opening-copy span {
+  display: block;
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.opening-copy strong {
+  color: #ff80bd;
+  font-weight: 700;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.85), 0 4px 18px rgba(183, 36, 111, 0.38);
+}
+
+.opening-footer {
+  position: absolute;
+  right: 40px;
+  bottom: 34px;
+  left: 40px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 8px;
+  font-weight: 800;
+  text-shadow: 0 2px 12px rgba(4, 69, 117, 0.55);
+  opacity: 0;
+}
+
+.opening-wipe {
+  z-index: 40;
+  background: #fff;
+  opacity: 0;
+  clip-path: circle(0 at 78% 22%);
+}
+
+.summon-skip {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 30;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(20, 181, 219, 0.76);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 50%;
+  box-shadow: 0 7px 22px rgba(6, 101, 146, 0.2);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  opacity: 0;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.summon-skip:hover {
+  background: rgba(255, 116, 183, 0.9);
+  transform: scale(1.05);
+}
+
+.summon-skip svg {
+  width: 20px;
+  height: 20px;
+}
+
+.summon-replay {
+  background: rgba(20, 181, 219, 0.86);
+  border-color: rgba(255, 255, 255, 0.74);
+  border-radius: 50%;
+  box-shadow: 0 7px 22px rgba(6, 101, 146, 0.24);
+}
+
+.summon-intro.is-active .opening-loader {
+  animation: summer-loader-away 5.15s ease both;
+}
+
+.summon-intro.is-active .opening-summer-prologue {
+  animation: summer-prologue-mark 3.24s 0.12s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.summon-intro.is-active .opening-project-logo {
+  animation: summer-logo-mark 1.82s 3.08s cubic-bezier(0.2, 0.72, 0.25, 1) both;
+}
+
+.summon-intro.is-active .summon-skip {
+  animation: summer-skip-in 0.5s 0.55s ease both;
+}
+
+.summon-intro.is-active .opening-sky {
+  animation: summer-scene-reveal 3.8s 4.42s cubic-bezier(0.18, 0.75, 0.25, 1) both;
+}
+
+.summon-intro.is-active .opening-sunwash {
+  animation: summer-sunwash 3.7s 4.5s ease-out both;
+}
+
+.summon-intro.is-active .opening-rays {
+  animation: summer-rays-in 3.6s 4.62s ease-out both;
+}
+
+.summon-intro.is-active .opening-masthead {
+  animation: summer-masthead-in 2.7s 4.94s ease-out both;
+}
+
+.summon-intro.is-active .opening-haze {
+  animation: summer-haze-in 2.7s 4.76s ease-out both;
+}
+
+.summon-intro.is-active .opening-prelude {
+  animation: summer-fade-down 0.7s 4.86s ease-out both;
+}
+
+.summon-intro.is-active .opening-title-lockup {
+  animation: summer-title-in 0.95s 5.08s cubic-bezier(0.18, 0.78, 0.22, 1) both;
+}
+
+.summon-intro.is-active .opening-copy span:first-child {
+  animation: summer-copy-in 0.72s 5.78s ease-out both;
+}
+
+.summon-intro.is-active .opening-copy span:last-child {
+  animation: summer-copy-in 0.76s 6s ease-out both;
+}
+
+.summon-intro.is-active .opening-footer {
+  animation: summer-footer-in 0.65s 6.36s ease-out both;
+}
+
+.summon-intro.is-active .opening-light-wings i {
+  animation: summer-wing-in 0.9s 4.68s ease-out both, summer-wing-float 3.2s 5.58s ease-in-out infinite alternate;
+}
+
+.summon-intro.is-active .opening-light-wings .wing-2 { animation-delay: 4.9s, 5.8s; }
+.summon-intro.is-active .opening-light-wings .wing-3 { animation-delay: 4.76s, 5.66s; }
+.summon-intro.is-active .opening-light-wings .wing-4 { animation-delay: 5.1s, 6s; }
+.summon-intro.is-active .opening-light-wings .wing-5 { animation-delay: 5.23s, 6.13s; }
+
+.summon-intro.is-active .opening-petals i {
+  animation: summer-petal-drift 3.5s 4.62s ease-in-out infinite;
+}
+
+.summon-intro.is-active .opening-petals i:nth-child(2) { animation-delay: 4.9s; animation-duration: 3s; }
+.summon-intro.is-active .opening-petals i:nth-child(3) { animation-delay: 5.18s; animation-duration: 3.8s; }
+.summon-intro.is-active .opening-petals i:nth-child(4) { animation-delay: 4.76s; animation-duration: 3.2s; }
+.summon-intro.is-active .opening-petals i:nth-child(5) { animation-delay: 5.32s; animation-duration: 3.6s; }
+.summon-intro.is-active .opening-petals i:nth-child(6) { animation-delay: 5s; animation-duration: 3.1s; }
+.summon-intro.is-active .opening-petals i:nth-child(7) { animation-delay: 5.46s; animation-duration: 3.7s; }
+.summon-intro.is-active .opening-petals i:nth-child(8) { animation-delay: 5.22s; animation-duration: 3.3s; }
+
+.summon-intro.is-active .opening-sparkles i {
+  animation: summer-sparkle 1.7s 4.85s ease-in-out infinite;
+}
+
+.summon-intro.is-active .opening-sparkles i:nth-child(2n) { animation-delay: 5.2s; }
+.summon-intro.is-active .opening-sparkles i:nth-child(3n) { animation-delay: 5.52s; }
+
+.summon-intro.is-leaving {
+  pointer-events: none;
+  animation: summer-intro-away 1.05s ease both;
+}
+
+.summon-intro.is-leaving .opening-wipe {
+  animation: summer-page-bloom 1.05s cubic-bezier(0.55, 0, 0.25, 1) both;
+}
+
+@keyframes summer-prologue-mark {
+  0% { opacity: 0; filter: blur(14px); transform: scale(0.985); }
+  14%, 78% { opacity: 0.96; filter: blur(0); transform: scale(1); }
+  100% { opacity: 0; filter: blur(12px); transform: scale(1.012); }
+}
+
+@keyframes summer-logo-mark {
+  0% { opacity: 0; transform: scale(0.96); }
+  20%, 70% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.025); }
+}
+
+@keyframes summer-loader-away {
+  0%, 84% { opacity: 1; visibility: visible; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@keyframes summer-skip-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes summer-scene-reveal {
+  0% { opacity: 0; filter: brightness(1.7) saturate(0.72); transform: scale(1.08); }
+  26% { opacity: 1; filter: brightness(1.2) saturate(0.94); }
+  100% { opacity: 1; filter: brightness(1.02) saturate(1.04); transform: scale(1.02); }
+}
+
+@keyframes summer-sunwash {
+  0% { opacity: 0; transform: translateX(-8%); }
+  28% { opacity: 0.92; }
+  100% { opacity: 0.48; transform: translateX(2%); }
+}
+
+@keyframes summer-rays-in {
+  0% { opacity: 0; transform: translateX(-10%); }
+  35% { opacity: 0.9; }
+  100% { opacity: 0.42; transform: translateX(5%); }
+}
+
+@keyframes summer-masthead-in {
+  0% { opacity: 0; transform: translateY(36px); }
+  100% { opacity: 0.48; transform: translateY(0); }
+}
+
+@keyframes summer-haze-in {
+  0% { opacity: 0; transform: translateY(35%); }
+  100% { opacity: 0.88; transform: translateY(0); }
+}
+
+@keyframes summer-fade-down {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes summer-title-in {
+  0% { opacity: 0; transform: translateY(28px); clip-path: inset(100% 0 0); }
+  100% { opacity: 1; transform: translateY(0); clip-path: inset(0); }
+}
+
+@keyframes summer-copy-in {
+  0% { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes summer-footer-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes summer-wing-in {
+  0% { opacity: 0; transform: translateY(18px) rotate(-8deg) scale(0.72); }
+  100% { opacity: 0.88; transform: translateY(0) rotate(0) scale(1); }
+}
+
+@keyframes summer-wing-float {
+  0% { margin-top: 0; margin-left: 0; }
+  100% { margin-top: -12px; margin-left: 8px; }
+}
+
+@keyframes summer-petal-drift {
+  0% { opacity: 0; transform: translate(-12px, -18px) rotate(0deg); }
+  22% { opacity: 0.92; }
+  76% { opacity: 0.76; }
+  100% { opacity: 0; transform: translate(44px, 45px) rotate(185deg); }
+}
+
+@keyframes summer-sparkle {
+  0%, 100% { opacity: 0.12; }
+  48% { opacity: 0.95; }
+}
+
+@keyframes summer-page-bloom {
+  0% { opacity: 0; clip-path: circle(0 at 78% 22%); }
+  55%, 100% { opacity: 1; clip-path: circle(150% at 78% 22%); }
+}
+
+@keyframes summer-intro-away {
+  0%, 62% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (max-width: 900px) {
+  .opening-project-logo img {
+    width: min(780px, 92vw);
+  }
+
+  .opening-masthead {
+    right: -10px;
+    font-size: 142px;
+  }
+
+  .opening-stage {
+    width: calc(100% - 56px);
+    padding-inline: 28px;
+  }
+
+  .opening-prelude,
+  .opening-footer {
+    right: 28px;
+    left: 28px;
+  }
+
+  .opening-title-main {
+    font-size: 92px;
+  }
+
+  .opening-copy {
+    font-size: 31px;
+  }
+}
+
+@media (max-width: 640px) {
+  .summon-skip {
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .opening-summer-prologue p {
+    font-size: 29px;
+  }
+
+  .opening-summer-prologue small {
+    margin-top: 11px;
+    font-size: 7px;
+  }
+
+  .opening-project-logo {
+    padding: 0 24px;
+  }
+
+  .opening-project-logo img {
+    width: min(500px, 96vw);
+  }
+
+  .opening-sky {
+    background-position: 66% center;
+  }
+
+  .opening-sunwash {
+    background:
+      linear-gradient(100deg, rgba(255, 255, 255, 0.34) 0%, transparent 62%),
+      radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.86) 0, rgba(255, 255, 255, 0.18) 18%, transparent 43%);
+  }
+
+  .opening-masthead {
+    right: -8px;
+    bottom: 9%;
+    font-size: 76px;
+  }
+
+  .opening-light-wings .wing-1 { top: 10%; left: 5%; width: 36px; height: 27px; }
+  .opening-light-wings .wing-2 { top: 23%; left: 46%; width: 29px; height: 22px; }
+  .opening-light-wings .wing-3 { top: 15%; right: 8%; width: 42px; height: 31px; }
+  .opening-light-wings .wing-4 { top: 38%; right: 4%; width: 27px; height: 20px; }
+  .opening-light-wings .wing-5 { display: none; }
+
+  .opening-stage {
+    width: 100%;
+    min-height: 100svh;
+    margin: 0;
+    padding: 76px 30px 72px;
+    justify-content: center;
+  }
+
+  .opening-prelude {
+    top: 28px;
+    right: 74px;
+    left: 30px;
+    gap: 8px;
+    font-size: 7px;
+  }
+
+  .opening-prelude i {
+    width: 20px;
+  }
+
+  .opening-title-kicker {
+    margin-bottom: 10px;
+    font-size: 10px;
+  }
+
+  .opening-title-main {
+    font-size: 66px;
+  }
+
+  .opening-title-echo {
+    margin-top: 9px;
+    font-size: 12px;
+  }
+
+  .opening-title-sub {
+    width: 100%;
+    margin-top: 11px;
+    font-size: 8px;
+  }
+
+  .opening-copy {
+    margin-top: 34px;
+    font-size: 24px;
+  }
+
+  .opening-footer {
+    right: 30px;
+    bottom: 27px;
+    left: 30px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 640px) and (max-height: 700px) {
+  .opening-stage {
+    padding-top: 62px;
+    padding-bottom: 58px;
+  }
+
+  .opening-title-main {
+    font-size: 58px;
+  }
+
+  .opening-copy {
+    margin-top: 25px;
+    font-size: 21px;
+  }
+
+  .opening-footer {
+    bottom: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .summon-intro *,
+  .summon-intro *::before,
+  .summon-intro *::after {
+    animation: none !important;
+  }
+}
