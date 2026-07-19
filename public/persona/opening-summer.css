@@ -9,6 +9,16 @@
   color: #fff;
 }
 
+.summon-intro::before {
+  position: absolute;
+  z-index: 80;
+  inset: 0;
+  content: "";
+  background: #fff;
+  opacity: 1;
+  pointer-events: none;
+}
+
 .opening-loader,
 .opening-canvas,
 .opening-sky,
@@ -28,26 +38,28 @@
   inset: 0;
   z-index: 20;
   overflow: hidden;
-  background-color: #f7fdff;
-  background-image:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.42)),
-    url("/hinahina/images/opening-summer-v2.webp");
-  background-position: center;
-  background-size: cover;
+  background: #fff;
   text-align: center;
 }
 
 .opening-loader::before {
   position: absolute;
-  inset: -8%;
+  z-index: 0;
+  inset: -6%;
   content: "";
-  background: radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.9), transparent 36%);
-  mix-blend-mode: screen;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.24)),
+    radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.72), transparent 35%),
+    url("/persona/images/opening-summer-v2.webp") center / cover no-repeat;
+  opacity: 0;
+  transform: translate3d(-1.6%, -0.5%, 0) scale(1.09);
+  will-change: opacity, filter, transform;
   pointer-events: none;
 }
 
 .opening-loader::after {
   position: absolute;
+  z-index: 0;
   right: 0;
   bottom: 12%;
   left: 0;
@@ -55,6 +67,7 @@
   content: "";
   background: linear-gradient(90deg, transparent, rgba(62, 171, 211, 0.62), transparent);
   box-shadow: 0 0 16px rgba(255, 255, 255, 0.9);
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -135,9 +148,9 @@
 
 .opening-sky {
   inset: -3%;
-  background-image: url("/hinahina/images/eyecatch-lively-v7.jpg");
-  background-position: center center;
-  background-size: cover;
+  background-image: url("/persona/images/header-keyvisual-preferred-v6.webp");
+  background-position: 82% 27%;
+  background-size: 240% auto;
   opacity: 0;
   transform: scale(1.08);
   will-change: opacity, transform, filter;
@@ -444,6 +457,200 @@
   clip-path: circle(0 at 78% 22%);
 }
 
+.opening-reality-breach {
+  position: absolute;
+  inset: 0;
+  z-index: 41;
+  overflow: hidden;
+  visibility: hidden;
+  background: rgba(2, 5, 13, 0);
+  color: #dffcff;
+  font-family: "SFMono-Regular", Consolas, "Noto Sans JP", monospace;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.opening-reality-breach::before,
+.opening-reality-breach::after,
+.opening-reality-slices,
+.opening-reality-slices i,
+.opening-reality-static,
+.opening-reality-scan {
+  position: absolute;
+  pointer-events: none;
+}
+
+.opening-reality-breach::before {
+  inset: 0;
+  z-index: 4;
+  content: "";
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(178, 247, 255, 0.045) 0,
+    rgba(178, 247, 255, 0.045) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  mix-blend-mode: screen;
+}
+
+.opening-reality-breach::after {
+  inset: -8%;
+  z-index: 5;
+  content: "";
+  background:
+    radial-gradient(circle at 50% 50%, transparent 18%, rgba(0, 2, 9, 0.3) 58%, rgba(0, 1, 5, 0.92) 100%),
+    linear-gradient(90deg, rgba(77, 238, 255, 0.04), transparent 30%, transparent 68%, rgba(255, 45, 126, 0.05));
+}
+
+.opening-reality-slices {
+  inset: 0;
+  z-index: 1;
+}
+
+.opening-reality-slices i {
+  inset: -3%;
+  display: block;
+  background: #5edcf4 url("/persona/images/eyecatch-lively-v7.jpg") center center / cover no-repeat;
+  filter: contrast(1.45) saturate(1.75) hue-rotate(var(--reality-slice-hue, 0deg));
+  mix-blend-mode: hard-light;
+  opacity: 0;
+  transform: translate3d(0, 0, 0) scale(1.035);
+  will-change: opacity, transform;
+}
+
+.opening-reality-slices i:nth-child(1) {
+  --reality-slice-x: 7vw;
+  --reality-slice-x-reverse: -3vw;
+  --reality-slice-hue: 18deg;
+  clip-path: inset(7% 0 80% 0);
+}
+
+.opening-reality-slices i:nth-child(2) {
+  --reality-slice-x: -9vw;
+  --reality-slice-x-reverse: 4vw;
+  --reality-slice-hue: -32deg;
+  clip-path: inset(29% 0 57% 0);
+}
+
+.opening-reality-slices i:nth-child(3) {
+  --reality-slice-x: 11vw;
+  --reality-slice-x-reverse: -5vw;
+  --reality-slice-hue: 42deg;
+  clip-path: inset(55% 0 30% 0);
+}
+
+.opening-reality-static {
+  inset: -20%;
+  z-index: 2;
+  background:
+    repeating-radial-gradient(circle at 18% 35%, rgba(221, 254, 255, 0.28) 0 1px, transparent 1px 4px),
+    repeating-radial-gradient(circle at 72% 61%, rgba(255, 64, 144, 0.18) 0 1px, transparent 1px 5px);
+  background-size: 7px 7px, 9px 9px;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+}
+
+.opening-reality-scan {
+  right: -8%;
+  left: -8%;
+  top: -18%;
+  z-index: 3;
+  height: 13%;
+  background: linear-gradient(180deg, transparent, rgba(86, 232, 255, 0.3), rgba(255, 255, 255, 0.92), rgba(255, 54, 139, 0.28), transparent);
+  box-shadow: 0 0 32px rgba(74, 223, 255, 0.28);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+.opening-reality-log {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 6;
+  width: min(680px, calc(100vw - 80px));
+  padding: 28px 32px 26px;
+  border: 1px solid rgba(111, 236, 255, 0.22);
+  border-left: 3px solid #54e8ff;
+  background: linear-gradient(105deg, rgba(2, 11, 23, 0.82), rgba(2, 7, 17, 0.42));
+  box-shadow: 0 0 48px rgba(0, 193, 229, 0.08), inset 0 0 32px rgba(2, 25, 39, 0.5);
+  opacity: 0;
+  transform: translate3d(-50%, -46%, 0);
+  clip-path: inset(0 100% 0 0);
+}
+
+.opening-reality-log p {
+  margin: 0;
+  text-shadow: -1px 0 rgba(255, 55, 137, 0.72), 1px 0 rgba(80, 232, 255, 0.8), 0 0 14px rgba(100, 235, 255, 0.18);
+}
+
+.opening-reality-status,
+.opening-reality-loop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  letter-spacing: 0.2em;
+}
+
+.opening-reality-status {
+  color: rgba(195, 247, 255, 0.72);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.opening-reality-status strong {
+  color: #ff4b91;
+  font-size: 12px;
+}
+
+.opening-reality-copy {
+  margin: 22px 0 20px;
+  padding: 17px 0 16px;
+  border-block: 1px solid rgba(105, 224, 247, 0.13);
+}
+
+.opening-reality-copy p:first-child {
+  color: #f2fcff;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: clamp(20px, 2.3vw, 31px);
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+}
+
+.opening-reality-copy p:last-child {
+  margin-top: 7px;
+  color: rgba(170, 236, 246, 0.7);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.opening-reality-copy span {
+  color: #75ecff;
+}
+
+.opening-reality-persona {
+  color: rgba(188, 240, 249, 0.62);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.opening-reality-loop {
+  margin-top: 9px !important;
+  color: rgba(191, 238, 246, 0.58);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.opening-reality-loop strong {
+  color: #ff5a9d;
+  font-size: 20px;
+  line-height: 1;
+}
+
 .summon-skip {
   position: absolute;
   top: 24px;
@@ -486,8 +693,22 @@
   animation: summer-loader-away 5.15s ease both;
 }
 
+.summon-intro.is-active::before {
+  animation: summer-opening-whiteout 0.28s 0.05s ease-out both;
+}
+
 .summon-intro.is-active .opening-summer-prologue {
-  animation: summer-prologue-mark 3.24s 0.12s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: summer-prologue-mark 2.7s 0.42s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.summon-intro.is-active .opening-loader::before {
+  animation:
+    summer-loader-background-in 1.8s 1.4s cubic-bezier(0.2, 0.72, 0.25, 1) both,
+    summer-loader-background-drift 4.1s 1.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.summon-intro.is-active .opening-loader::after {
+  animation: summer-loader-detail-in 0.75s 1.58s ease-out both;
 }
 
 .summon-intro.is-active .opening-project-logo {
@@ -568,17 +789,165 @@
 
 .summon-intro.is-leaving {
   pointer-events: none;
-  animation: summer-intro-away 1.05s ease both;
+  animation: summer-intro-away 0.72s ease both;
+}
+
+.summon-intro.is-leaving::before {
+  visibility: hidden;
+  opacity: 0;
+  animation: none;
 }
 
 .summon-intro.is-leaving .opening-wipe {
-  animation: summer-page-bloom 1.05s cubic-bezier(0.55, 0, 0.25, 1) both;
+  animation: summer-page-bloom 0.72s cubic-bezier(0.55, 0, 0.25, 1) both;
+}
+
+/* The default opening breaks for a beat, then goes straight to the page. */
+.summon-intro:not(.is-pop-opening).is-leaving .opening-sky {
+  animation: reality-source-corrupt 0.72s steps(2, end) both;
+}
+
+.summon-intro:not(.is-pop-opening).is-leaving .opening-stage {
+  animation: reality-stage-corrupt 0.72s steps(2, end) both;
+}
+
+.summon-intro:not(.is-pop-opening).is-leaving .opening-sky::after {
+  --reality-slice-x: 8vw;
+  --reality-slice-x-reverse: -4vw;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  content: "";
+  pointer-events: none;
+  background: inherit;
+  filter: contrast(1.45) saturate(1.75) hue-rotate(26deg);
+  mix-blend-mode: hard-light;
+  opacity: 0;
+  clip-path: inset(24% 0 61%);
+  animation: reality-slice-tear 0.72s steps(2, end) both;
+}
+
+.summon-intro:not(.is-pop-opening).is-leaving::after {
+  position: absolute;
+  top: -18%;
+  right: -8%;
+  left: -8%;
+  z-index: 39;
+  height: 13%;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(86, 232, 255, 0.3), rgba(255, 255, 255, 0.92), rgba(255, 54, 139, 0.28), transparent);
+  box-shadow: 0 0 32px rgba(74, 223, 255, 0.28);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: reality-scan-fall 0.72s linear both;
+}
+
+@keyframes reality-source-corrupt {
+  0% { opacity: 1; filter: none; transform: translate3d(0, 0, 0); clip-path: inset(0); }
+  10% { filter: contrast(1.35) saturate(1.75) hue-rotate(12deg); transform: translate3d(5px, -1px, 0) scale(1.004); }
+  20% { filter: contrast(1.55) saturate(1.35) hue-rotate(-24deg); transform: translate3d(-12px, 2px, 0) scale(1.015, 0.996); clip-path: inset(5% 0 1%); }
+  34% { opacity: 0.82; filter: contrast(1.8) saturate(0.55); transform: translate3d(15px, -2px, 0) skewX(0.55deg); clip-path: inset(0 0 11%); }
+  50% { opacity: 1; filter: contrast(1.25) saturate(1.8) hue-rotate(22deg); transform: translate3d(-7px, 1px, 0) scaleX(1.018); }
+  68% { opacity: 0.58; filter: brightness(0.55) contrast(2.1); transform: translate3d(9px, 0, 0) scaleY(0.992); clip-path: inset(18% 0 4%); }
+  100% { opacity: 0; filter: brightness(0.1) contrast(2); transform: translate3d(0, 0, 0) scaleX(1.03); clip-path: inset(48% 0 48%); }
+}
+
+@keyframes reality-stage-corrupt {
+  0% { opacity: 1; filter: none; transform: translate3d(0, 0, 0); clip-path: inset(0); }
+  12% { filter: drop-shadow(-5px 0 #ff478d) drop-shadow(5px 0 #4eeaff); transform: translate3d(-4px, 1px, 0); }
+  26% { opacity: 0.88; transform: translate3d(12px, -2px, 0); clip-path: inset(8% 0 4%); }
+  42% { filter: drop-shadow(8px 0 #ff478d) drop-shadow(-8px 0 #4eeaff); transform: translate3d(-14px, 1px, 0); clip-path: inset(21% 0 13%); }
+  64% { opacity: 0.5; transform: translate3d(7px, 0, 0) scaleX(1.025); clip-path: inset(34% 0 28%); }
+  100% { opacity: 0; filter: blur(1px); transform: translate3d(0, 0, 0) scaleX(1.08); clip-path: inset(49% 0 49%); }
+}
+
+@keyframes reality-control-away {
+  to { opacity: 0; }
+}
+
+@keyframes reality-breach-shell {
+  0% { visibility: visible; opacity: 0; background-color: rgba(2, 5, 13, 0); }
+  2%, 17% { visibility: visible; opacity: 1; background-color: rgba(2, 5, 13, 0); }
+  22% { opacity: 1; background-color: rgba(2, 5, 13, 0.9); }
+  27%, 87% { opacity: 1; background-color: #02050d; }
+  94% { opacity: 1; background-color: #02050d; }
+  100% { visibility: visible; opacity: 0; background-color: #02050d; }
+}
+
+@keyframes reality-slice-tear {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) scale(1.035); }
+  8% { opacity: 0.88; transform: translate3d(var(--reality-slice-x), -2px, 0) scale(1.035); }
+  18% { opacity: 0.16; transform: translate3d(var(--reality-slice-x-reverse), 2px, 0) scale(1.02); }
+  30% { opacity: 0.72; transform: translate3d(var(--reality-slice-x-reverse), -1px, 0) scale(1.045); }
+  44% { opacity: 0; transform: translate3d(var(--reality-slice-x), 1px, 0) scale(1.035); }
+  58% { opacity: 0.58; transform: translate3d(var(--reality-slice-x), 0, 0) scale(1.055, 0.99); }
+  76%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1.035); }
+}
+
+@keyframes reality-static-break {
+  0% { opacity: 0; transform: translate3d(0, 0, 0); }
+  5% { opacity: 0.26; transform: translate3d(-2%, 1%, 0); }
+  13% { opacity: 0.08; transform: translate3d(1%, -2%, 0); }
+  21% { opacity: 0.34; transform: translate3d(2%, 1%, 0); }
+  31%, 72% { opacity: 0.055; transform: translate3d(0, 0, 0); }
+  80% { opacity: 0.18; transform: translate3d(-1%, 2%, 0); }
+  88%, 100% { opacity: 0; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes reality-scan-fall {
+  0% { top: -18%; opacity: 0; transform: skewY(-1deg); }
+  8% { opacity: 0.76; }
+  64% { top: 93%; opacity: 0.34; transform: skewY(0.55deg); }
+  100% { top: 118%; opacity: 0; transform: skewY(0); }
+}
+
+@keyframes reality-log-reveal {
+  0%, 26% { opacity: 0; transform: translate3d(-50%, -46%, 0); clip-path: inset(0 100% 0 0); }
+  30% { opacity: 0.86; transform: translate3d(calc(-50% - 5px), -50%, 0); clip-path: inset(0 36% 0 0); }
+  32% { opacity: 0.24; transform: translate3d(calc(-50% + 4px), -50%, 0); clip-path: inset(0 0 0 0); }
+  35%, 71% { opacity: 1; transform: translate3d(-50%, -50%, 0); clip-path: inset(0); }
+  74% { opacity: 0.42; transform: translate3d(calc(-50% + 7px), -50%, 0); clip-path: inset(0 0 0 18%); }
+  78%, 100% { opacity: 0; transform: translate3d(-50%, -50%, 0); clip-path: inset(48% 0 48%); }
+}
+
+@keyframes reality-exit-line {
+  0%, 76% { opacity: 0; filter: blur(0); transform: scaleY(1); }
+  80% { opacity: 0.92; filter: blur(0); transform: scaleY(1); }
+  85% { opacity: 1; filter: blur(0.5px); transform: scaleY(4); }
+  91% { opacity: 0.74; filter: blur(3px); transform: scaleY(9); }
+  96%, 100% { opacity: 0; filter: blur(7px); transform: scaleY(16); }
+}
+
+@keyframes reality-intro-away {
+  0%, 88% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @keyframes summer-prologue-mark {
-  0% { opacity: 0; filter: blur(14px); transform: scale(0.985); }
-  14%, 78% { opacity: 0.96; filter: blur(0); transform: scale(1); }
-  100% { opacity: 0; filter: blur(12px); transform: scale(1.012); }
+  0% { opacity: 0; filter: blur(18px); transform: scale(0.982); }
+  28%, 74% { opacity: 0.96; filter: blur(0); transform: scale(1); }
+  100% { opacity: 0; filter: blur(18px); transform: scale(1.015); }
+}
+
+@keyframes summer-loader-background-in {
+  0% { opacity: 0; filter: brightness(1.22) saturate(0.72) blur(4px); }
+  100% { opacity: 1; filter: brightness(1.03) saturate(0.98) blur(0); }
+}
+
+@keyframes summer-loader-background-drift {
+  0% { transform: translate3d(-1.6%, -0.5%, 0) scale(1.09); }
+  100% { transform: translate3d(1.4%, 0.7%, 0) scale(1.035); }
+}
+
+@keyframes summer-loader-detail-in {
+  0% { opacity: 0; transform: scaleX(0.42); }
+  100% { opacity: 1; transform: scaleX(1); }
+}
+
+@keyframes summer-opening-whiteout {
+  0%, 12% { visibility: visible; opacity: 1; }
+  100% { visibility: hidden; opacity: 0; }
 }
 
 @keyframes summer-logo-mark {
@@ -598,9 +967,9 @@
 }
 
 @keyframes summer-scene-reveal {
-  0% { opacity: 0; filter: brightness(1.7) saturate(0.72); transform: scale(1.08); }
+  0% { opacity: 0; filter: brightness(1.7) saturate(0.72); transform: translate3d(1.8%, -0.6%, 0) scale(1.1); }
   26% { opacity: 1; filter: brightness(1.2) saturate(0.94); }
-  100% { opacity: 1; filter: brightness(1.02) saturate(1.04); transform: scale(1.02); }
+  100% { opacity: 1; filter: brightness(1.02) saturate(1.04); transform: translate3d(-1.2%, 0.5%, 0) scale(1.025); }
 }
 
 @keyframes summer-sunwash {
@@ -678,6 +1047,11 @@
 }
 
 @media (max-width: 900px) {
+  .opening-sky {
+    background-position: 73% center;
+    background-size: cover;
+  }
+
   .opening-project-logo img {
     width: min(780px, 92vw);
   }
@@ -715,6 +1089,36 @@
     height: 44px;
   }
 
+  .opening-reality-slices i {
+    background-position: 66% center;
+  }
+
+  .opening-reality-log {
+    width: calc(100vw - 40px);
+    padding: 22px 21px 20px;
+  }
+
+  .opening-reality-status,
+  .opening-reality-loop {
+    gap: 12px;
+    letter-spacing: 0.12em;
+  }
+
+  .opening-reality-copy {
+    margin-block: 17px 16px;
+    padding-block: 14px 13px;
+  }
+
+  .opening-reality-copy p:first-child {
+    font-size: 21px;
+    letter-spacing: 0.035em;
+  }
+
+  .opening-reality-persona {
+    font-size: 8px;
+    letter-spacing: 0.11em;
+  }
+
   .opening-summer-prologue p {
     font-size: 29px;
   }
@@ -722,6 +1126,10 @@
   .opening-summer-prologue small {
     margin-top: 11px;
     font-size: 7px;
+  }
+
+  .opening-loader::before {
+    background-position: center, center, 61% center;
   }
 
   .opening-project-logo {
@@ -733,7 +1141,7 @@
   }
 
   .opening-sky {
-    background-position: 66% center;
+    background-position: 73% center;
   }
 
   .opening-sunwash {
@@ -831,6 +1239,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .summon-intro:not(.is-pop-opening).is-leaving::after {
+    display: none;
+    animation: none !important;
+  }
+
+  .opening-reality-breach {
+    display: none;
+  }
+
   .summon-intro *,
   .summon-intro *::before,
   .summon-intro *::after {

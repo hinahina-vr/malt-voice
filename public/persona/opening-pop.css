@@ -564,7 +564,7 @@
 
 .pop-final-photo {
   inset: -2%;
-  background-image: url("/hinahina/images/header-keyvisual-preferred-v6.webp");
+  background-image: url("/persona/images/header-keyvisual-preferred-v6.webp");
   background-position: center;
   background-size: cover;
   transform: scale(1.05);
@@ -1100,7 +1100,7 @@
     background-color: #dff5fb;
     background-image:
       linear-gradient(180deg, #dff5fb 0%, #dff5fb 18%, rgba(223, 245, 251, 0) 34%),
-      url("/hinahina/images/header-keyvisual-preferred-v6.webp");
+      url("/persona/images/header-keyvisual-preferred-v6.webp");
     background-position: center, 70% bottom;
     background-size: 100% 100%, auto 64%;
     background-repeat: no-repeat;

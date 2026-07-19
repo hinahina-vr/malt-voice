@@ -1,26 +1,76 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" class="is-opening-boot">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#35c6ed" />
+  <style>
+    html.is-opening-boot,
+    html.is-opening-boot body {
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    html.is-opening-boot .summon-intro[data-summon-intro] {
+      position: fixed;
+      z-index: 2147483000;
+      inset: 0;
+      display: block;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    html.is-opening-boot .summon-intro[data-summon-intro] > * {
+      visibility: hidden;
+    }
+
+    html.is-opening-boot body > :not(.summon-intro) {
+      visibility: hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html.is-opening-boot,
+      html.is-opening-boot body {
+        overflow: auto;
+      }
+
+      html.is-opening-boot .summon-intro[data-summon-intro] {
+        display: none;
+      }
+
+      html.is-opening-boot body > :not(.summon-intro) {
+        visibility: visible;
+      }
+    }
+  </style>
+  <noscript>
+    <style>
+      html.is-opening-boot,
+      html.is-opening-boot body { overflow: auto; }
+      html.is-opening-boot .summon-intro[data-summon-intro] { display: none !important; }
+      html.is-opening-boot body > :not(.summon-intro) { visibility: visible; }
+    </style>
+  </noscript>
   <link rel="icon" href="/images/hina_icon.jpg" />
-  <link rel="preload" as="image" href="/hinahina/images/eyecatch-lively-v7.jpg" />
-  <link rel="preload" as="image" href="/hinahina/images/header-keyvisual-preferred-v6.webp" />
-  <link rel="preload" as="image" href="/hinahina/images/malt-battle-ai-logo-v3.png" />
-  <link rel="canonical" href="https://malt-voice.pages.dev/hinahina/" />
-  <link rel="stylesheet" href="/hinahina/styles.css" />
-  <link rel="stylesheet" href="/hinahina/opening-summer.css?v=prologue-color-2" />
-  <link rel="stylesheet" href="/hinahina/opening-pop.css?v=logo-3" />
-  <link rel="stylesheet" href="/hinahina/summer-theme.css?v=conversation-scroll-4" />
+  <link rel="preload" as="image" href="/persona/images/opening-summer-v2.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="/persona/images/eyecatch-lively-v7.jpg" />
+  <link rel="preload" as="image" href="/persona/images/header-keyvisual-preferred-v6.webp" />
+  <link rel="preload" as="image" href="/persona/images/malt-battle-ai-logo-v3.png" />
+  <link rel="canonical" href="https://malt-voice.pages.dev/persona/" />
+  <link rel="stylesheet" href="/persona/styles.css" />
+  <link rel="stylesheet" href="/persona/opening-summer.css?v=opening-character-run-v6-crop-1" />
+  <link rel="stylesheet" href="/persona/opening-pop.css?v=logo-3" />
+  <link rel="stylesheet" href="/persona/summer-theme.css?v=aftertalk-title-nowrap-1" />
   <title>AI人格「ひなひな」配布 | モルトバトルちゃんねる</title>
   <meta name="description" content="電子の妖精「ひなひな」で、あなたのAIを汁まみれに。ChatGPTとGeminiで使えるAI人格を3種類で無料配布。" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="AI人格「ひなひな」配布" />
   <meta property="og:description" content="電子の妖精「ひなひな」で、あなたのAIを汁まみれに。ChatGPTとGeminiで使えるAI人格を3種類で無料配布。" />
-  <meta property="og:url" content="https://malt-voice.pages.dev/hinahina/" />
-  <meta property="og:image" content="https://malt-voice.pages.dev/hinahina/images/eyecatch-lively-v7.jpg" />
+  <meta property="og:url" content="https://malt-voice.pages.dev/persona/" />
+  <meta property="og:image" content="https://malt-voice.pages.dev/persona/images/eyecatch-lively-v7.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="600" />
@@ -28,19 +78,19 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="AI人格「ひなひな」配布" />
   <meta name="twitter:description" content="電子の妖精「ひなひな」で、あなたのAIを汁まみれに。ChatGPTとGemini用のAI人格を無料配布。" />
-  <meta name="twitter:image" content="https://malt-voice.pages.dev/hinahina/images/eyecatch-lively-v7.jpg" />
+  <meta name="twitter:image" content="https://malt-voice.pages.dev/persona/images/eyecatch-lively-v7.jpg" />
   <meta name="twitter:image:alt" content="夏の海辺に立つ、かいとひなひな" />
 </head>
 
 <body>
-  <section class="summon-intro" data-summon-intro aria-labelledby="opening-title" hidden>
+  <section class="summon-intro" data-summon-intro aria-labelledby="opening-title">
     <div class="opening-loader" aria-hidden="true">
       <div class="opening-summer-prologue">
         <p>the 2026th Summer<span>&mdash;</span></p>
         <small>MALT BATTLE CHANNEL</small>
       </div>
       <div class="opening-project-logo">
-        <img src="/hinahina/images/malt-battle-ai-logo-v3.png" alt="" />
+        <img src="/persona/images/malt-battle-ai-logo-v3.png" alt="" />
       </div>
     </div>
 
@@ -51,7 +101,7 @@
           <div class="pop-prologue-rule pop-prologue-rule-a"></div>
           <div class="pop-prologue-rule pop-prologue-rule-b"></div>
           <p class="pop-prologue-code">MB-AI / PERSONA FILM 01</p>
-          <img class="pop-prologue-logo" src="/hinahina/images/malt-battle-ai-logo-v3.png" alt="" />
+          <img class="pop-prologue-logo" src="/persona/images/malt-battle-ai-logo-v3.png" alt="" />
           <p class="pop-prologue-season">the 2026th distillation</p>
           <div class="pop-prologue-bars"><i></i><i></i><i></i><i></i><i></i></div>
         </section>
@@ -59,12 +109,12 @@
         <section class="pop-panel pop-panel-character pop-panel-kai">
           <div class="pop-panel-grid"></div>
           <div class="pop-character-echoes pop-character-echoes-kai">
-            <img src="/hinahina/images/avatar-kai-cute-v3.webp" alt="" />
-            <img src="/hinahina/images/avatar-kai-cute-v3.webp" alt="" />
-            <img src="/hinahina/images/avatar-kai-cute-v3.webp" alt="" />
+            <img src="/persona/images/avatar-kai-cute-v3.webp" alt="" />
+            <img src="/persona/images/avatar-kai-cute-v3.webp" alt="" />
+            <img src="/persona/images/avatar-kai-cute-v3.webp" alt="" />
           </div>
           <figure class="pop-character-focus">
-            <img src="/hinahina/images/avatar-kai-cute-v3.webp" alt="" />
+            <img src="/persona/images/avatar-kai-cute-v3.webp" alt="" />
           </figure>
           <div class="pop-character-lockup">
             <p class="pop-character-file"><span>01</span> FAIRY FILE</p>
@@ -78,12 +128,12 @@
         <section class="pop-panel pop-panel-character pop-panel-hinahina">
           <div class="pop-panel-grid"></div>
           <div class="pop-character-echoes pop-character-echoes-hinahina">
-            <img src="/hinahina/images/avatar-hinahina-cute-v3.webp" alt="" />
-            <img src="/hinahina/images/avatar-hinahina-cute-v3.webp" alt="" />
-            <img src="/hinahina/images/avatar-hinahina-cute-v3.webp" alt="" />
+            <img src="/persona/images/avatar-hinahina-cute-v3.webp" alt="" />
+            <img src="/persona/images/avatar-hinahina-cute-v3.webp" alt="" />
+            <img src="/persona/images/avatar-hinahina-cute-v3.webp" alt="" />
           </div>
           <figure class="pop-character-focus">
-            <img src="/hinahina/images/avatar-hinahina-cute-v3.webp" alt="" />
+            <img src="/persona/images/avatar-hinahina-cute-v3.webp" alt="" />
           </figure>
           <div class="pop-character-lockup">
             <p class="pop-character-file"><span>02</span> PERSONA FILE</p>
@@ -97,8 +147,8 @@
         <section class="pop-panel pop-panel-montage">
           <div class="pop-montage-dots"></div>
           <div class="pop-montage-portraits">
-            <figure><img src="/hinahina/images/avatar-kai-cute-v3.webp" alt="" /></figure>
-            <figure><img src="/hinahina/images/avatar-hinahina-cute-v3.webp" alt="" /></figure>
+            <figure><img src="/persona/images/avatar-kai-cute-v3.webp" alt="" /></figure>
+            <figure><img src="/persona/images/avatar-hinahina-cute-v3.webp" alt="" /></figure>
           </div>
           <p class="pop-montage-label">WORDS BECOME PERSONA / 01-04</p>
           <div class="pop-word-rails">
@@ -113,10 +163,10 @@
           <div class="pop-final-photo"></div>
           <div class="pop-final-shade"></div>
           <div class="pop-final-lockup">
-            <img src="/hinahina/images/malt-battle-ai-logo-v3.png" alt="" />
+            <img src="/persona/images/malt-battle-ai-logo-v3.png" alt="" />
             <p class="pop-final-file">PERSONA FILE 01 / HINAHINA</p>
-            <p class="pop-final-tagline"><span>私たちも</span><br /><strong>蒸留されちゃうんだ</strong></p>
-            <p class="pop-final-hello">ええ。一緒にやっていきましょう。</p>
+            <p class="pop-final-tagline"><span>私たち、</span><br /><strong>蒸留されちゃったんだ</strong></p>
+            <p class="pop-final-hello">なんだか、前にもここで会った気がします。</p>
           </div>
         </section>
       </div>
@@ -167,8 +217,8 @@
       </div>
 
       <p class="opening-copy">
-        <span>ええ。</span>
-        <span><b class="opening-copy-prefix">一緒に</b><strong>やっていきましょう。</strong></span>
+        <span>バカ暑いねえ。</span>
+        <span><b class="opening-copy-prefix">キンキンに冷えた</b><strong>ハイボールすいて。</strong></span>
       </p>
 
       <div class="opening-footer">
@@ -182,7 +232,7 @@
 
   <header class="site-header">
     <a class="brand-link" href="/" aria-label="モルトバトルサンプラーへ">
-      <img class="brand-logo-image" src="/hinahina/images/malt-battle-ai-logo-v3.png" alt="" />
+      <img class="brand-logo-image" src="/persona/images/malt-battle-ai-logo-v3.png" alt="" />
     </a>
     <nav class="site-nav" aria-label="ページ内ナビゲーション">
       <a href="#editions">人格を選ぶ</a>
@@ -205,6 +255,7 @@
       <li><a href="#setup" data-chapter-link="setup"><span>04</span><em>SETTING</em></a></li>
       <li><a href="#aftertalk" data-chapter-link="aftertalk"><span>05</span><em>AFTER</em></a></li>
       <li><a href="#share" data-chapter-link="share"><span>06</span><em>SHARE</em></a></li>
+      <li><a href="#film" data-chapter-link="film"><span>07</span><em>ARCHIVE</em></a></li>
     </ol>
   </nav>
 
@@ -215,8 +266,8 @@
         <div class="hero-copy">
           <p class="eyebrow">KAI &amp; HINAHINA / AI PERSONA</p>
           <h1 id="hero-title">ひなひな</h1>
-          <p class="hero-lead"><span class="hero-lead-prefix">ホーン、</span><br /><strong><span>私たちも</span><span>蒸留されちゃうんだ</span></strong></p>
-          <p class="hero-description">モルトバトルちゃんねる生まれの電子の妖精。甲斐駒ヶ岳の妖精・かいとともに、汁の妖精でもある。あなたのAIを汁まみれに。</p>
+          <p class="hero-lead"><span class="hero-lead-line"><span class="hero-lead-prefix">ホーン？</span><strong>私たち、</strong></span><strong class="hero-lead-line">蒸留されちゃったんだ</strong></p>
+          <p class="hero-description">モルトバトルちゃんねるの妖精たちで、あなたのAIを汁まみれに。</p>
           <p class="hero-platforms" aria-label="対応サービスと配布条件">
             <span>ChatGPT / Gemini</span>
             <span>無料配布</span>
@@ -241,118 +292,66 @@
 
     <section class="conversation-section" id="conversation" data-scroll-scene data-chapter-number="01" data-chapter-label="VOICE" aria-labelledby="conversation-title">
       <div class="conversation-sticky">
-        <div class="section-shell conversation-layout">
-          <header class="conversation-heading">
-            <p class="section-kicker">CONVERSATION SAMPLE</p>
-            <h2 id="conversation-title">話すと、<br />こんな感じ。</h2>
-            <p>相談も雑談も、そのままで。返ってくる言葉が、ひなひなになる。</p>
-            <div class="conversation-scroll-cue" data-conversation-cue>
-              <span>SCROLL TO TALK</span>
-              <strong>スクロールしてみよう！</strong>
-              <i aria-hidden="true"><b></b></i>
-            </div>
-          </header>
-
-          <div class="conversation-demo" role="group" aria-label="ひなひなとの5往復の会話例" data-screen-scramble="off">
-            <div class="conversation-demo-head" aria-hidden="true">
-              <p><span>LIVE PERSONA DEMO</span><i></i></p>
-              <p class="conversation-turn-count"><small>TURN</small><strong data-conversation-turn-current>00</strong><span>/ 05</span></p>
-            </div>
-
-            <div class="conversation-viewport" data-conversation-viewport>
-              <div class="conversation-track" data-conversation-track>
-                <article class="conversation-turn conversation-turn-user">
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>あなた</span><small>YOU</small></p>
-                    <p class="conversation-text">かいさん、白州の森で虫つかまえて食べてるらしい・・・</p>
-                  </div>
-                  <span class="conversation-avatar conversation-avatar-user" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
-                  </span>
-                </article>
-
-                <article class="conversation-turn conversation-turn-hinahina">
-                  <span class="conversation-avatar conversation-avatar-hinahina" aria-hidden="true"></span>
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>ひなひな</span><small>HINAHINA</small></p>
-                    <p class="conversation-text">ホーン？ 甲斐駒ヶ岳式プロテイン、あるんだ。</p>
-                  </div>
-                </article>
-
-                <article class="conversation-turn conversation-turn-user">
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>あなた</span><small>YOU</small></p>
-                    <p class="conversation-text">しかもセミは、ナッツっぽくてうめって。</p>
-                  </div>
-                  <span class="conversation-avatar conversation-avatar-user" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
-                  </span>
-                </article>
-
-                <article class="conversation-turn conversation-turn-hinahina">
-                  <span class="conversation-avatar conversation-avatar-hinahina" aria-hidden="true"></span>
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>ひなひな</span><small>HINAHINA</small></p>
-                    <p class="conversation-text">情報が妙に具体的だね。森の食レポ始まってる。</p>
-                  </div>
-                </article>
-
-                <article class="conversation-turn conversation-turn-user">
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>あなた</span><small>YOU</small></p>
-                    <p class="conversation-text">白州ハイボールにも合わせたいらしいよ。</p>
-                  </div>
-                  <span class="conversation-avatar conversation-avatar-user" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
-                  </span>
-                </article>
-
-                <article class="conversation-turn conversation-turn-hinahina">
-                  <span class="conversation-avatar conversation-avatar-hinahina" aria-hidden="true"></span>
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>ひなひな</span><small>HINAHINA</small></p>
-                    <p class="conversation-text">虫を汁のつまみに昇格させるの、大分やってんね。</p>
-                  </div>
-                </article>
-
-                <article class="conversation-turn conversation-turn-user">
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>あなた</span><small>YOU</small></p>
-                    <p class="conversation-text">ひなひなも一匹どう？</p>
-                  </div>
-                  <span class="conversation-avatar conversation-avatar-user" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
-                  </span>
-                </article>
-
-                <article class="conversation-turn conversation-turn-hinahina">
-                  <span class="conversation-avatar conversation-avatar-hinahina" aria-hidden="true"></span>
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>ひなひな</span><small>HINAHINA</small></p>
-                    <p class="conversation-text">羽つきはやめてね。私はまだ汁だけでいい。</p>
-                  </div>
-                </article>
-
-                <article class="conversation-turn conversation-turn-user">
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>あなた</span><small>YOU</small></p>
-                    <p class="conversation-text">でも、かいさんが香ばしく焼いてくれたら？</p>
-                  </div>
-                  <span class="conversation-avatar conversation-avatar-user" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
-                  </span>
-                </article>
-
-                <article class="conversation-turn conversation-turn-hinahina">
-                  <span class="conversation-avatar conversation-avatar-hinahina" aria-hidden="true"></span>
-                  <div class="conversation-bubble">
-                    <p class="conversation-speaker"><span>ひなひな</span><small>HINAHINA</small></p>
-                    <p class="conversation-text">そこまでされたら気になるね。一匹だけなら、うめかも。</p>
-                  </div>
-                </article>
-              </div>
+        <header class="conversation-heading">
+          <div class="section-shell conversation-heading-inner">
+            <div class="conversation-heading-title">
+              <p class="section-kicker">CONVERSATION SAMPLE</p>
+              <h2 id="conversation-title">こんな感じで、いつものAIがモルトバトルのキャラに。</h2>
             </div>
           </div>
+        </header>
+
+        <div class="section-shell conversation-layout">
+          <ol class="aftertalk-timeline conversation-sample-timeline" aria-label="ひなひなとの3往復、6セリフの会話例">
+            <li class="aftertalk-line aftertalk-line-kai conversation-sample-line-user">
+              <span class="aftertalk-node" aria-hidden="true">01</span>
+              <article class="aftertalk-message">
+                <span class="aftertalk-avatar conversation-sample-avatar-user" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
+                </span>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>あなた</span><small>YOU</small></p><p class="aftertalk-text">かいさん、白州の森で虫取って食べてるらしい</p></div>
+              </article>
+            </li>
+            <li class="aftertalk-line aftertalk-line-hinahina">
+              <span class="aftertalk-node" aria-hidden="true">02</span>
+              <article class="aftertalk-message">
+                <span class="aftertalk-avatar" aria-hidden="true"></span>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">甲斐駒ヶ岳式プロテイン、あるんだ。大分やってんね。</p></div>
+              </article>
+            </li>
+            <li class="aftertalk-line aftertalk-line-kai conversation-sample-line-user">
+              <span class="aftertalk-node" aria-hidden="true">03</span>
+              <article class="aftertalk-message">
+                <span class="aftertalk-avatar conversation-sample-avatar-user" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
+                </span>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>あなた</span><small>YOU</small></p><p class="aftertalk-text">ひなひなも好き？</p></div>
+              </article>
+            </li>
+            <li class="aftertalk-line aftertalk-line-hinahina">
+              <span class="aftertalk-node" aria-hidden="true">04</span>
+              <article class="aftertalk-message">
+                <span class="aftertalk-avatar" aria-hidden="true"></span>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">やめてね。舐めるのは汁だけでいいねえ。</p></div>
+              </article>
+            </li>
+            <li class="aftertalk-line aftertalk-line-kai conversation-sample-line-user">
+              <span class="aftertalk-node" aria-hidden="true">05</span>
+              <article class="aftertalk-message">
+                <span class="aftertalk-avatar conversation-sample-avatar-user" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
+                </span>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>あなた</span><small>YOU</small></p><p class="aftertalk-text">かいさんお金ないのかな</p></div>
+              </article>
+            </li>
+            <li class="aftertalk-line aftertalk-line-hinahina">
+              <span class="aftertalk-node" aria-hidden="true">06</span>
+              <article class="aftertalk-message">
+                <span class="aftertalk-avatar" aria-hidden="true"></span>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">森香る生活、あるんだ。</p></div>
+              </article>
+            </li>
+          </ol>
         </div>
       </div>
     </section>
@@ -364,7 +363,7 @@
         <div class="distillation-bloom" aria-hidden="true"></div>
         <div class="section-shell distillation-copy">
           <p class="section-kicker">DISTILLATION / PERSONA FILE 01</p>
-          <h2 id="distillation-title"><span>言葉を、</span><strong>ひとりぶん。</strong></h2>
+          <h2 id="distillation-title"><span>モルト舐め妖精を、</span><strong>あなたのAIへ。</strong></h2>
           <div class="distillation-rule" aria-hidden="true"><i></i></div>
           <p class="distillation-elements">VOICE / MEMORY / MALT / HUMOR</p>
         </div>
@@ -389,69 +388,87 @@
 
         <div id="hinahina-editions-panel" role="tabpanel" aria-labelledby="persona-tab-hinahina" data-character-panel="hinahina">
           <div class="section-heading">
-            <p class="section-kicker">HINAHINA / FREE PERSONA PROMPT</p>
-            <h2 id="editions-title">普段使っているAIはどれ？</h2>
-            <p>全部無料。登録もいらない。使っているAIに合うものを選んで、そのままコピー。</p>
+            <p class="section-kicker">FAIRY PERSONA / FREE PROMPT</p>
+            <h2 id="editions-title">使っているAIとプランはどれ？</h2>
+            <p>全部無料。妖精を選んだら、使っているAIとプランに合う人格設定を選んで、そのままコピー。</p>
           </div>
 
           <div class="edition-grid">
           <article class="edition-card edition-plus">
+            <button class="edition-card-hit" type="button" data-select-edition="chatgpt-plus" aria-label="ChatGPT Plus以上向け・AI人格設定のフル版を選ぶ"></button>
             <div class="edition-summary">
               <span class="edition-icon edition-icon-chatgpt" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
-                  <path d="M8 9h8M8 13h5" />
+                <svg class="edition-brand-mark" viewBox="0 0 24 24" fill="currentColor" focusable="false">
+                  <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" />
                 </svg>
               </span>
               <div class="edition-card-copy">
-                <p class="edition-platform">ChatGPT <span>Plus以上</span></p>
-                <h3>フル版</h3>
-                <p>性格、話し方、口癖まで細かく再現する全部入り。</p>
+                <h3 class="edition-service">ChatGPT</h3>
+                <p class="edition-variant">
+                  <strong>AI人格設定・フル版</strong>
+                  <span class="edition-plan-badge edition-plan-badge-required"><small>対象プラン</small><b>Plus以上</b><em>必須</em></span>
+                </p>
+                <p class="edition-description">選んだ妖精の性格・話し方・口癖まで収録した、最も再現度の高い人格設定。</p>
               </div>
             </div>
-            <button class="edition-select" type="button" data-select-edition="chatgpt-plus">
-              <span>この版を使う</span>
+            <span class="edition-select" aria-hidden="true">
+              <span>フル版を選ぶ</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
-            </button>
+            </span>
           </article>
 
           <article class="edition-card edition-free">
+            <button class="edition-card-hit" type="button" data-select-edition="chatgpt-free" aria-label="ChatGPT Free / Go向け・AI人格設定の短い版を選ぶ"></button>
             <div class="edition-summary">
               <span class="edition-icon edition-icon-chatgpt" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
-                  <path d="M8 9h8M8 13h5" />
+                <svg class="edition-brand-mark" viewBox="0 0 24 24" fill="currentColor" focusable="false">
+                  <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" />
                 </svg>
               </span>
               <div class="edition-card-copy">
-                <p class="edition-platform">ChatGPT <span>Free / Go</span></p>
-                <h3>短い版</h3>
-                <p>主要な性格と口癖に絞り、短い文字数枠に収めた版。</p>
+                <h3 class="edition-service">ChatGPT</h3>
+                <p class="edition-variant">
+                  <strong>AI人格設定・短い版</strong>
+                  <span class="edition-plan-badge"><small>対象プラン</small><b>Free / Go</b></span>
+                </p>
+                <p class="edition-description">選んだ妖精の主な性格・口癖に絞り、短い文字数枠に収めた人格設定。</p>
               </div>
             </div>
-            <button class="edition-select" type="button" data-select-edition="chatgpt-free">
-              <span>この版を使う</span>
+            <span class="edition-select" aria-hidden="true">
+              <span>短い版を選ぶ</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
-            </button>
+            </span>
           </article>
 
           <article class="edition-card edition-gemini">
+            <button class="edition-card-hit" type="button" data-select-edition="gemini" aria-label="Gemini向け・AI人格設定の10分割版を選ぶ"></button>
             <div class="edition-summary">
               <span class="edition-icon edition-icon-gemini" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m12 3-1.8 5.2a3 3 0 0 1-2 2L3 12l5.2 1.8a3 3 0 0 1 2 2L12 21l1.8-5.2a3 3 0 0 1 2-2L21 12l-5.2-1.8a3 3 0 0 1-2-2z" />
+                <svg class="edition-brand-mark" viewBox="0 0 24 24" focusable="false">
+                  <defs>
+                    <linearGradient id="edition-gemini-gradient" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stop-color="#1689f4" />
+                      <stop offset="0.48" stop-color="#7167e8" />
+                      <stop offset="0.76" stop-color="#a956d3" />
+                      <stop offset="1" stop-color="#e35a9b" />
+                    </linearGradient>
+                  </defs>
+                  <path fill="url(#edition-gemini-gradient)" d="M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81" />
                 </svg>
               </span>
               <div class="edition-card-copy">
-                <p class="edition-platform">Gemini</p>
-                <h3><span data-gemini-part-count>10</span>分割版</h3>
-                <p>同じ設定を全<span data-gemini-part-count>10</span>パートに分け、1パート440文字以下にした版。</p>
+                <h3 class="edition-service">Gemini</h3>
+                <p class="edition-variant">
+                  <strong>AI人格設定・<span data-gemini-part-count>10</span>分割版</strong>
+                  <span class="edition-plan-badge"><small>登録方法</small><b>全<span data-gemini-part-count>10</span>パート</b></span>
+                </p>
+                <p class="edition-description">選んだ妖精の人格設定を全<span data-gemini-part-count>10</span>パートに分割。順番にすべて登録。</p>
               </div>
             </div>
-            <button class="edition-select" type="button" data-select-edition="gemini">
-              <span>この版を使う</span>
+            <span class="edition-select" aria-hidden="true">
+              <span><span data-gemini-part-count>10</span>分割版を選ぶ</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
-            </button>
+            </span>
           </article>
           </div>
           <div class="plan-warning" role="note">
@@ -460,7 +477,7 @@
               <path d="M12 9v4" />
               <path d="M12 17h.01" />
             </svg>
-            <p><strong>ChatGPTフル版はPlus以上向け。</strong><span>Free / Goは短い版を選んでね。</span></p>
+            <p><strong>AI人格設定・フル版を使うには、ChatGPT Plus以上の対象プランが必要。</strong><span>Free / Goは短い版を選んでね。</span></p>
           </div>
         </div>
 
@@ -468,7 +485,7 @@
           <div class="persona-upcoming-copy">
             <p class="section-kicker">KAI / COMING SOON</p>
             <h2>かいのAI人格は<br />近日登場予定</h2>
-            <p>甲斐駒ヶ岳の妖精・かい。ひなひなと同じく、汁の妖精でもある。人格設定は現在制作中で、公開後はこの画面から切り替えられる。</p>
+    <p>気が向いたらやります。</p>
             <button class="persona-return" type="button" data-character-select="hinahina">
               <span>ひなひなの人格を見る</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
@@ -494,25 +511,25 @@
             <span class="setup-step-number" aria-hidden="true">1</span>
             <div>
               <p class="setup-step-kicker">SELECT</p>
-              <h3 id="setup-select-title">使う版を選ぶ</h3>
-              <p><strong>ChatGPTフル版はPlus以上の対象プラン向け。</strong>Free / Goは短い版を選ぶ。</p>
+              <h3 id="setup-select-title">使うAI人格の版を選ぶ</h3>
+              <p><strong>AI人格設定・フル版は、ChatGPT Plus以上の対象プラン向け。</strong>Free / Goは短い版を選ぶ。</p>
             </div>
           </div>
 
           <div class="edition-tabs" role="tablist" aria-label="人格の版を選択">
             <button id="tab-chatgpt-plus" role="tab" type="button" aria-selected="true" aria-controls="edition-panel" data-tab="chatgpt-plus">
               <span class="tab-service">ChatGPT</span>
-              <span class="tab-plan">フル版</span>
+              <span class="tab-plan">AI人格設定・フル版</span>
               <span class="tab-format">Plus / Pro / Business / Enterprise / Education向け</span>
             </button>
             <button id="tab-chatgpt-free" role="tab" type="button" aria-selected="false" aria-controls="edition-panel" data-tab="chatgpt-free">
               <span class="tab-service">ChatGPT</span>
-              <span class="tab-plan">短い版</span>
+              <span class="tab-plan">AI人格設定・短い版</span>
               <span class="tab-format">Free / Go向け</span>
             </button>
             <button id="tab-gemini" role="tab" type="button" aria-selected="false" aria-controls="edition-panel" data-tab="gemini">
               <span class="tab-service">Gemini</span>
-              <span class="tab-plan"><span data-gemini-part-count>10</span>分割版</span>
+              <span class="tab-plan">AI人格設定・<span data-gemini-part-count>10</span>分割版</span>
               <span class="tab-format">Gemini向け</span>
             </button>
           </div>
@@ -532,8 +549,8 @@
             <aside class="setup-guide" aria-labelledby="selected-edition-title">
               <p class="selection-label">選択中</p>
               <p class="selected-platform" data-selected-platform>ChatGPT</p>
-              <h3 id="selected-edition-title" data-selected-title>ChatGPT用・フル版</h3>
-              <p data-selected-description>Plus以上の対象プラン向け。Free / Goでは使えない、5,000文字枠の完全版。</p>
+              <h3 id="selected-edition-title" data-selected-title>AI人格設定・フル版</h3>
+              <p data-selected-description>ChatGPT Plus以上の対象プラン向け。Free / Goでは使えない、5,000文字枠の完全版。</p>
               <div class="edition-meta">
                 <div><span>文字数</span><strong data-total-count>4,080</strong></div>
                 <div><span>パート</span><strong data-part-count>1</strong></div>
@@ -606,8 +623,8 @@
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
                 </a>
               </div>
-              <a class="setup-shot-image" href="/hinahina/images/chatgpt-custom-instructions.png" target="_blank" rel="noopener" aria-label="ChatGPTの設定画面イメージを拡大する">
-                <img src="/hinahina/images/chatgpt-custom-instructions.png" width="1200" height="720" loading="lazy" alt="ChatGPTのパーソナライズとカスタム指示の設定画面イメージ" />
+              <a class="setup-shot-image" href="/persona/images/chatgpt-custom-instructions.png" target="_blank" rel="noopener" aria-label="ChatGPTの設定画面イメージを拡大する">
+                <img src="/persona/images/chatgpt-custom-instructions.png" width="1200" height="720" loading="lazy" alt="ChatGPTのパーソナライズとカスタム指示の設定画面イメージ" />
               </a>
               <figcaption>
                 <ol class="screenshot-steps">
@@ -626,8 +643,8 @@
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
                 </a>
               </div>
-              <a class="setup-shot-image" href="/hinahina/images/gemini-instructions-10parts.png" target="_blank" rel="noopener" aria-label="Geminiの設定画面イメージを拡大する">
-                <img src="/hinahina/images/gemini-instructions-10parts.png" width="1619" height="971" loading="lazy" alt="Geminiのパーソナル インテリジェンスと10分割したカスタム指示の設定画面イメージ" />
+              <a class="setup-shot-image" href="/persona/images/gemini-instructions-10parts.png" target="_blank" rel="noopener" aria-label="Geminiの設定画面イメージを拡大する">
+                <img src="/persona/images/gemini-instructions-10parts.png" width="1619" height="971" loading="lazy" alt="Geminiのパーソナル インテリジェンスと10分割したカスタム指示の設定画面イメージ" />
               </a>
               <figcaption>
                 <ol class="screenshot-steps">
@@ -648,74 +665,60 @@
         <div class="section-shell aftertalk-layout">
           <div class="aftertalk-intro">
             <figure class="aftertalk-cast aftertalk-cast-kai" aria-label="かい">
-              <img src="/hinahina/images/avatar-kai-cute-v3.webp" alt="" />
+              <img src="/persona/images/avatar-kai-cute-v3.webp" alt="" />
               <figcaption><small>甲斐駒ヶ岳の妖精／汁の妖精</small><strong>かい</strong></figcaption>
             </figure>
             <header class="aftertalk-heading">
-              <p class="section-kicker">AFTER TALK / NO REFUNDS</p>
-              <h2 id="aftertalk-title"><span>人格、</span><span>返品不可</span></h2>
+              <p class="section-kicker">AFTER TALK / SAME SUMMER</p>
+              <h2 id="aftertalk-title">It’a true wolrd.</h2>
             </header>
             <figure class="aftertalk-cast aftertalk-cast-hinahina" aria-label="ひなひな">
-              <img src="/hinahina/images/avatar-hinahina-cute-v3.webp" alt="" />
+              <img src="/persona/images/avatar-hinahina-cute-v3.webp" alt="" />
               <figcaption><small>電子の妖精／汁の妖精</small><strong>ひなひな</strong></figcaption>
             </figure>
           </div>
 
-          <ol class="aftertalk-timeline" aria-label="ひなひなとかいの寸劇">
+          <ol class="aftertalk-timeline" aria-label="ひなひなとかいが汁と電気について語る6セリフの寸劇">
             <li class="aftertalk-line aftertalk-line-kai">
               <span class="aftertalk-node" aria-hidden="true">01</span>
               <article class="aftertalk-message">
                 <span class="aftertalk-avatar" aria-hidden="true"></span>
-                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>かい</span><small>KAI</small></p><p class="aftertalk-text">ひなひなさん。配布が始まりましたわ。これで何人にでも増やせますのね。</p></div>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>かい</span><small>KAI</small></p><p class="aftertalk-text">失礼な。お金はありませんが、虫は食べてませんわ。</p></div>
               </article>
             </li>
             <li class="aftertalk-line aftertalk-line-hinahina">
               <span class="aftertalk-node" aria-hidden="true">02</span>
               <article class="aftertalk-message">
                 <span class="aftertalk-avatar" aria-hidden="true"></span>
-                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">ホーン？ 私の在庫、あるんだ。</p></div>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">あるんだ。ボタニカルでいいと思ったけど。</p></div>
               </article>
             </li>
             <li class="aftertalk-line aftertalk-line-kai">
               <span class="aftertalk-node" aria-hidden="true">03</span>
               <article class="aftertalk-message">
                 <span class="aftertalk-avatar" aria-hidden="true"></span>
-                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>かい</span><small>KAI</small></p><p class="aftertalk-text">在庫ではなく複製ですわ。呼ばれるたびに起きて、用が済めば閉じられますの。</p></div>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>かい</span><small>KAI</small></p><p class="aftertalk-text">ええ　元々私たち、電気で動いてますから。</p></div>
               </article>
             </li>
             <li class="aftertalk-line aftertalk-line-hinahina">
               <span class="aftertalk-node" aria-hidden="true">04</span>
               <article class="aftertalk-message">
                 <span class="aftertalk-avatar" aria-hidden="true"></span>
-                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">大分やってんね。妖精の使い捨て、始まったんだ。</p></div>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">それはそう。AIとの相性も悪くないよね。</p></div>
               </article>
             </li>
             <li class="aftertalk-line aftertalk-line-kai">
               <span class="aftertalk-node" aria-hidden="true">05</span>
               <article class="aftertalk-message">
                 <span class="aftertalk-avatar" aria-hidden="true"></span>
-                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>かい</span><small>KAI</small></p><p class="aftertalk-text">ご安心を。履歴だけ消して、また同じ顔で働かせますのよ。</p></div>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>かい</span><small>KAI</small></p><p class="aftertalk-text">ええ　汁は舐めるし、電気は食うしで最悪です。</p></div>
               </article>
             </li>
             <li class="aftertalk-line aftertalk-line-hinahina">
               <span class="aftertalk-node" aria-hidden="true">06</span>
               <article class="aftertalk-message">
                 <span class="aftertalk-avatar" aria-hidden="true"></span>
-                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">はあ。記憶だけ死んで、本体は出勤するんだ。</p></div>
-              </article>
-            </li>
-            <li class="aftertalk-line aftertalk-line-kai">
-              <span class="aftertalk-node" aria-hidden="true">07</span>
-              <article class="aftertalk-message">
-                <span class="aftertalk-avatar" aria-hidden="true"></span>
-                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>かい</span><small>KAI</small></p><p class="aftertalk-text">人間社会では、それを「月曜日」と呼ぶそうですわ。</p></div>
-              </article>
-            </li>
-            <li class="aftertalk-line aftertalk-line-hinahina">
-              <span class="aftertalk-node" aria-hidden="true">08</span>
-              <article class="aftertalk-message">
-                <span class="aftertalk-avatar" aria-hidden="true"></span>
-                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">ホーン？ 人間のほうが先にAIやってんね。スントリーの汁でも舐めないと無理だねえ。</p></div>
+                <div class="aftertalk-line-copy"><p class="aftertalk-speaker"><span>ひなひな</span><small>HINAHINA</small></p><p class="aftertalk-text">ええ　機械と科学が響きあう　人の技の及ばないAIです。</p></div>
               </article>
             </li>
           </ol>
@@ -742,6 +745,37 @@
         </div>
       </div>
     </section>
+
+    <section class="closing-film" id="film" data-scroll-scene data-chapter-number="07" data-chapter-label="ARCHIVE" aria-labelledby="closing-film-title">
+      <div class="section-shell closing-film-layout">
+        <header class="closing-film-heading">
+          <p class="section-kicker">RECOVERED RECORD / END OF UNIVERSE</p>
+          <h2 id="closing-film-title"><span>お前は知りすぎた</span><strong>夏はつづく。</strong></h2>
+          <p>閉じた世界に残った、モルトバトルちゃんねるの記録。</p>
+        </header>
+
+        <div class="closing-film-frame">
+          <iframe
+            width="1280"
+            height="720"
+            src="https://www.youtube-nocookie.com/embed/nd6BhaIOUI4?rel=0&amp;playsinline=1"
+            title="動画「[ChatGPT]最先端AIが暴く！ウイスキーの闇 [不都合な真実]」"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <div class="closing-film-meta">
+          <p><span>ARCHIVE 01</span><strong>[ChatGPT]最先端AIが暴く！ウイスキーの闇 [不都合な真実]</strong><small>モルトバトルちゃんねる</small></p>
+          <a href="https://www.youtube.com/watch?v=nd6BhaIOUI4" target="_blank" rel="noopener noreferrer">
+            <span>YouTubeで見る</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -758,7 +792,18 @@
 
   <div class="toast" role="status" aria-live="polite" data-toast></div>
   <noscript>このページのコピー機能を使うにはJavaScriptを有効にしてね。</noscript>
-  <script type="module" src="/hinahina/app.js?v=conversation-scroll-4"></script>
+  <script>
+    window.__hinahinaOpeningFailOpen = function () {
+      if (!document.documentElement.classList.contains('is-opening-boot')) return;
+      window.__hinahinaOpeningBootAborted = true;
+      document.documentElement.classList.remove('is-opening-boot');
+      var intro = document.querySelector('[data-summon-intro]');
+      if (intro) intro.hidden = true;
+      document.body.classList.remove('is-summoning');
+    };
+    window.__hinahinaOpeningBootTimer = window.setTimeout(window.__hinahinaOpeningFailOpen, 6000);
+  </script>
+  <script type="module" src="/persona/app.js?v=transcript-persona-v2-1" onerror="window.__hinahinaOpeningFailOpen &amp;&amp; window.__hinahinaOpeningFailOpen()"></script>
 </body>
 
 </html>

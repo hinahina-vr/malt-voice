@@ -1,24 +1,24 @@
-import { chatGptFreePrompt, chatGptPlusPrompt, geminiPrompts } from './prompts.js';
+import { chatGptFreePrompt, chatGptPlusPrompt, geminiPrompts } from './prompts.js?v=transcript-persona-v2-1';
 
 const editions = {
   'chatgpt-free': {
     platform: 'ChatGPT',
-    title: 'ChatGPT用・短い版',
-    description: 'Free / Go向け。1,500文字枠に収まる圧縮版。',
+    title: 'AI人格設定・短い版',
+    description: 'ChatGPT Free / Go向け。1,500文字枠に収まる圧縮版。',
     parts: [chatGptFreePrompt],
     fileName: 'hinahina-chatgpt-free-go-1500.txt',
   },
   'chatgpt-plus': {
     platform: 'ChatGPT',
-    title: 'ChatGPT用・フル版',
-    description: 'Plus以上の対象プラン向け。Free / Goでは使えない、5,000文字枠の完全版。',
+    title: 'AI人格設定・フル版',
+    description: 'ChatGPT Plus以上の対象プラン向け。Free / Goでは使えない、5,000文字枠の完全版。',
     parts: [chatGptPlusPrompt],
     fileName: 'hinahina-chatgpt-plus-5000.txt',
   },
   gemini: {
     platform: 'Gemini',
-    title: `Gemini用・${geminiPrompts.length}分割`,
-    description: `Gemini向け。各パートを440文字以下にした${geminiPrompts.length}分割版。`,
+    title: `AI人格設定・${geminiPrompts.length}分割版`,
+    description: `Gemini向け。各パートを440文字以下にした${geminiPrompts.length}分割版。順番にすべて登録。`,
     parts: geminiPrompts,
     fileName: `hinahina-gemini-${geminiPrompts.length}parts.txt`,
   },
@@ -84,7 +84,9 @@ let interfaceDecodeRun = 0;
 const validCharacterIds = new Set(['hinahina', 'kai']);
 const openingVariant = new URLSearchParams(window.location.search).get('opening');
 const POP_OPENING_DURATION = 7400;
-const DEFAULT_OPENING_DURATION = 8500;
+const DEFAULT_OPENING_DURATION = 8800;
+const POP_OPENING_EXIT_DURATION = 1050;
+const DEFAULT_OPENING_EXIT_DURATION = 720;
 
 if (openingVariant === 'pop') {
   elements.summonIntro?.classList.add('is-pop-opening');
@@ -105,12 +107,16 @@ function preloadOpeningImage(src) {
   });
 }
 
-const openingAssetsReady = Promise.all([
-  preloadOpeningImage('/hinahina/images/eyecatch-lively-v7.jpg'),
-  preloadOpeningImage('/hinahina/images/header-keyvisual-preferred-v6.webp'),
-  preloadOpeningImage('/hinahina/images/avatar-kai-cute-v3.webp'),
-  preloadOpeningImage('/hinahina/images/avatar-hinahina-cute-v3.webp'),
-  preloadOpeningImage('/hinahina/images/malt-battle-ai-logo-v3.png'),
+const openingAssetsReady = Promise.race([
+  Promise.all([
+    preloadOpeningImage('/persona/images/opening-summer-v2.webp'),
+    preloadOpeningImage('/persona/images/eyecatch-lively-v7.jpg'),
+    preloadOpeningImage('/persona/images/header-keyvisual-preferred-v6.webp'),
+    preloadOpeningImage('/persona/images/avatar-kai-cute-v3.webp'),
+    preloadOpeningImage('/persona/images/avatar-hinahina-cute-v3.webp'),
+    preloadOpeningImage('/persona/images/malt-battle-ai-logo-v3.png'),
+  ]),
+  new Promise((resolve) => window.setTimeout(resolve, 3000)),
 ]);
 
 function splitScrambleText(text) {
@@ -321,10 +327,6 @@ function segmentProgress(value, start, end) {
   return clampProgress((value - start) / Math.max(0.001, end - start));
 }
 
-function easeOutCubic(value) {
-  return 1 - ((1 - value) ** 3);
-}
-
 function initScrollCinema() {
   const scenes = [...document.querySelectorAll('[data-scroll-scene]')];
   if (!scenes.length) return;
@@ -339,7 +341,9 @@ function initScrollCinema() {
   const conversation = document.querySelector('#conversation');
   const conversationViewport = conversation?.querySelector('[data-conversation-viewport]');
   const conversationTrack = conversation?.querySelector('[data-conversation-track]');
-  const conversationTurnCurrent = conversation?.querySelector('[data-conversation-turn-current]');
+  const conversationLineCurrent = conversation?.querySelector('[data-conversation-line-current]');
+  const conversationLineTotal = conversation?.querySelector('[data-conversation-line-total]');
+  const conversationStartCue = conversation?.querySelector('[data-conversation-start]');
   const bridge = document.querySelector('#distillation');
   const aftertalk = document.querySelector('#aftertalk');
   const share = document.querySelector('#share');
@@ -347,7 +351,6 @@ function initScrollCinema() {
   let scrollFrame = 0;
 
   const revealGroups = [
-    { selector: '.conversation-heading', variant: 'left' },
     { selector: '.persona-switcher', variant: 'up' },
     { selector: '#hinahina-editions-panel .section-heading', variant: 'left', delay: 70 },
     { selector: '.edition-card', variant: 'tilt', delay: 120, stagger: 120 },
@@ -362,6 +365,9 @@ function initScrollCinema() {
     { selector: '.aftertalk-line', variant: (target) => target.classList.contains('aftertalk-line-kai') ? 'left' : 'right' },
     { selector: '.share-layout > div:first-child', variant: 'left' },
     { selector: '.share-actions', variant: 'right', delay: 140 },
+    { selector: '.closing-film-heading', variant: 'left' },
+    { selector: '.closing-film-frame', variant: 'stage', delay: 100 },
+    { selector: '.closing-film-meta', variant: 'up', delay: 180 },
   ];
 
   const revealTargets = [];
@@ -389,7 +395,7 @@ function initScrollCinema() {
   const conversationSequence = conversationTrack
     ? [...conversationTrack.querySelectorAll('.conversation-turn')].map((message) => {
       const textTarget = message.querySelector('.conversation-text');
-      if (!textTarget) return { message, characters: [] };
+      if (!textTarget) return { message, characters: [], visible: false };
 
       const text = textTarget.textContent.trim();
       const accessibleText = document.createElement('span');
@@ -398,109 +404,140 @@ function initScrollCinema() {
       const visualText = document.createElement('span');
       visualText.className = 'conversation-typewriter';
       visualText.setAttribute('aria-hidden', 'true');
-      const characters = splitScrambleText(text).map((value) => {
+      const characters = splitScrambleText(text).map((value, index) => {
         const character = document.createElement('span');
         character.className = 'conversation-character';
         character.textContent = /\s/u.test(value) ? '\u00a0' : value;
+        character.style.setProperty('--conversation-character-delay', `${Math.min(index * 14, 364)}ms`);
         visualText.append(character);
         return character;
       });
       textTarget.replaceChildren(accessibleText, visualText);
-      return { message, characters, visibleCharacterCount: 0 };
+      return { message, characters, visible: false };
     })
     : [];
+  if (conversationLineTotal) {
+    conversationLineTotal.textContent = `/ ${String(conversationSequence.length).padStart(2, '0')}`;
+  }
   let conversationMetricsDirty = true;
   let conversationMessageShifts = [];
+  let conversationRevealedCount = 0;
+  let conversationAutoplayTimer = 0;
+  let conversationIsVisible = false;
+  let conversationHasStarted = false;
+  const conversationFirstDelay = 480;
+  const conversationStepDelay = 1040;
 
-  function updateConversationCinema(viewportHeight) {
-    if (!conversation || !conversationSequence.length || !conversationViewport || !conversationTrack) return;
+  function setConversationEntryVisible(entry, visible) {
+    if (entry.visible === visible) return;
+    entry.visible = visible;
+    entry.message.classList.toggle('is-conversation-visible', visible);
+    entry.characters.forEach((character) => character.classList.toggle('is-visible', visible));
+  }
 
-    if (reducedMotion.matches) {
-      conversation.style.setProperty('--conversation-line-progress', '1');
-      conversation.style.setProperty('--conversation-cue-opacity', '0');
-      conversationTrack.style.transform = 'none';
-      conversationSequence.forEach((entry) => {
-        const { message, characters } = entry;
-        message.style.opacity = '1';
-        message.style.transform = 'none';
-        for (let index = entry.visibleCharacterCount; index < characters.length; index += 1) {
-          characters[index].classList.add('is-visible');
-        }
-        entry.visibleCharacterCount = characters.length;
-      });
-      if (conversationTurnCurrent) conversationTurnCurrent.textContent = '05';
-      return;
-    }
+  function setConversationCueVisible(visible) {
+    if (!conversationStartCue) return;
+    conversationStartCue.classList.toggle('is-hidden', !visible);
+    conversationStartCue.tabIndex = visible ? 0 : -1;
+    conversationStartCue.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  }
 
-    const rect = conversation.getBoundingClientRect();
-    const stickyOffset = window.innerWidth <= 640 ? 64 : 72;
-    const stickyHeight = Math.max(1, viewportHeight - stickyOffset);
-    const pinDistance = Math.max(1, rect.height - stickyHeight);
-    const progress = clampProgress((stickyOffset - rect.top) / pinDistance);
-    const sequenceStart = 0.055;
-    const sequenceEnd = 0.91;
-    const step = (sequenceEnd - sequenceStart) / conversationSequence.length;
-    let activeIndex = -1;
-    let activeLocalProgress = 0;
-
-    conversation.style.setProperty('--conversation-progress', progress.toFixed(4));
-    conversation.style.setProperty('--conversation-line-progress', segmentProgress(progress, 0.035, 0.94).toFixed(3));
-    conversation.style.setProperty('--conversation-cue-opacity', (1 - segmentProgress(progress, 0.015, 0.12)).toFixed(3));
-    conversation.style.setProperty('--conversation-cue-shift', `${(-8 * segmentProgress(progress, 0.015, 0.12)).toFixed(2)}px`);
-
-    conversationSequence.forEach((entry, index) => {
-      const { message, characters } = entry;
-      const start = sequenceStart + (step * index);
-      const localProgress = segmentProgress(progress, start, start + (step * 0.82));
-      const bubbleProgress = easeOutCubic(segmentProgress(localProgress, 0, 0.34));
-      const textProgress = segmentProgress(localProgress, 0.16, 1);
-      const direction = message.classList.contains('conversation-turn-user') ? 1 : -1;
-      const horizontalShift = direction * (18 * (1 - bubbleProgress));
-      const verticalShift = 9 * (1 - bubbleProgress);
-      const visibleCharacterCount = Math.ceil(characters.length * textProgress);
-
-      message.style.opacity = bubbleProgress.toFixed(3);
-      message.style.transform = `translate3d(${horizontalShift.toFixed(2)}px, ${verticalShift.toFixed(2)}px, 0)`;
-      message.style.pointerEvents = bubbleProgress > 0.98 ? '' : 'none';
-      if (visibleCharacterCount > entry.visibleCharacterCount) {
-        for (let characterIndex = entry.visibleCharacterCount; characterIndex < visibleCharacterCount; characterIndex += 1) {
-          characters[characterIndex].classList.add('is-visible');
-        }
-      } else if (visibleCharacterCount < entry.visibleCharacterCount) {
-        for (let characterIndex = visibleCharacterCount; characterIndex < entry.visibleCharacterCount; characterIndex += 1) {
-          characters[characterIndex].classList.remove('is-visible');
-        }
-      }
-      entry.visibleCharacterCount = visibleCharacterCount;
-
-      if (localProgress > 0) {
-        activeIndex = index;
-        activeLocalProgress = localProgress;
-      }
-    });
-
-    const currentTurn = activeIndex < 0 ? 0 : Math.ceil((activeIndex + 1) / 2);
-    if (conversationTurnCurrent) conversationTurnCurrent.textContent = String(currentTurn).padStart(2, '0');
-
+  function updateConversationTrackPosition() {
+    if (!conversationViewport || !conversationTrack) return;
+    const activeIndex = conversationRevealedCount - 1;
     if (activeIndex < 0) {
       conversationTrack.style.transform = 'translate3d(0, 0, 0)';
       return;
     }
 
     if (conversationMetricsDirty) {
-      const viewportHeight = conversationViewport.clientHeight;
-      const viewportSpace = Math.max(1, viewportHeight - 28);
-      const maxShift = Math.max(0, conversationTrack.scrollHeight - viewportHeight);
+      const trackViewportHeight = conversationViewport.clientHeight;
+      const viewportSpace = Math.max(1, trackViewportHeight - 28);
+      const maxShift = Math.max(0, conversationTrack.scrollHeight - trackViewportHeight);
       conversationMessageShifts = conversationSequence.map(({ message }) => (
         Math.min(maxShift, Math.max(0, message.offsetTop + message.offsetHeight - viewportSpace))
       ));
       conversationMetricsDirty = false;
     }
-    const previousShift = activeIndex > 0 ? conversationMessageShifts[activeIndex - 1] : 0;
-    const currentShift = conversationMessageShifts[activeIndex] || 0;
-    const shiftProgress = easeOutCubic(segmentProgress(activeLocalProgress, 0, 0.58));
-    const trackShift = previousShift + ((currentShift - previousShift) * shiftProgress);
+
+    const trackShift = conversationMessageShifts[activeIndex] || 0;
     conversationTrack.style.transform = `translate3d(0, ${(-trackShift).toFixed(2)}px, 0)`;
+  }
+
+  function renderConversationState(nextCount) {
+    if (!conversation || !conversationSequence.length) return;
+    const revealedCount = Math.max(0, Math.min(conversationSequence.length, nextCount));
+    conversationRevealedCount = revealedCount;
+    conversation.style.setProperty('--conversation-progress', (revealedCount / conversationSequence.length).toFixed(4));
+    conversation.style.setProperty('--conversation-line-progress', (revealedCount / conversationSequence.length).toFixed(3));
+    setConversationCueVisible(!conversationHasStarted && revealedCount === 0);
+
+    conversationSequence.forEach((entry, index) => {
+      setConversationEntryVisible(entry, index < revealedCount);
+    });
+
+    if (conversationLineCurrent) {
+      conversationLineCurrent.textContent = String(revealedCount).padStart(2, '0');
+    }
+
+    window.requestAnimationFrame(updateConversationTrackPosition);
+  }
+
+  function clearConversationAutoplay() {
+    window.clearTimeout(conversationAutoplayTimer);
+    conversationAutoplayTimer = 0;
+  }
+
+  function scheduleConversationAutoplay(delay = conversationStepDelay) {
+    if (
+      reducedMotion.matches
+      || !conversationIsVisible
+      || conversationAutoplayTimer
+      || conversationRevealedCount >= conversationSequence.length
+    ) return;
+
+    conversationAutoplayTimer = window.setTimeout(() => {
+      conversationAutoplayTimer = 0;
+      if (!conversationIsVisible) return;
+      conversationHasStarted = true;
+      renderConversationState(conversationRevealedCount + 1);
+      scheduleConversationAutoplay(conversationStepDelay);
+    }, delay);
+  }
+
+  function startConversationAutoplay({ restart = false, immediate = false } = {}) {
+    if (!conversationSequence.length) return;
+    clearConversationAutoplay();
+
+    if (reducedMotion.matches) {
+      conversationHasStarted = true;
+      renderConversationState(conversationSequence.length);
+      return;
+    }
+
+    if (restart) {
+      conversationHasStarted = false;
+      renderConversationState(0);
+    }
+
+    const delay = immediate
+      ? 120
+      : conversationRevealedCount === 0
+        ? conversationFirstDelay
+        : conversationStepDelay;
+    scheduleConversationAutoplay(delay);
+  }
+
+  function updateConversationCinema() {
+    if (!conversation || !conversationSequence.length || !conversationViewport || !conversationTrack) return;
+    if (reducedMotion.matches) {
+      if (conversationRevealedCount !== conversationSequence.length) {
+        conversationHasStarted = true;
+        renderConversationState(conversationSequence.length);
+      }
+      return;
+    }
+    if (conversationMetricsDirty) window.requestAnimationFrame(updateConversationTrackPosition);
   }
 
   function setActiveScene(scene) {
@@ -559,34 +596,9 @@ function initScrollCinema() {
     }
 
     if (conversation) {
-      updateConversationCinema(viewportHeight);
-    }
-
-    if (bridge) {
-      const rect = bridge.getBoundingClientRect();
-      const pinDistance = Math.max(1, rect.height - viewportHeight);
-      const entryProgress = clampProgress((viewportHeight - rect.top) / viewportHeight);
-      const pinnedProgress = clampProgress(-rect.top / pinDistance);
-      const progress = clampProgress((viewportHeight - rect.top) / Math.max(1, rect.height));
-      const imageReveal = segmentProgress(entryProgress, 0.02, 1) ** 1.35;
-      const originTravel = easeOutCubic(segmentProgress(entryProgress, 0.02, 0.9));
-      const restingOriginY = window.innerWidth <= 640 ? 62 : 49;
-      const originY = 4 + ((restingOriginY - 4) * originTravel);
-      const copyIn = easeOutCubic(segmentProgress(pinnedProgress, 0.04, 0.31));
-      const copyOut = segmentProgress(pinnedProgress, 0.84, 0.98);
-      const copyOpacity = copyIn * (1 - copyOut);
-      const bloomIn = segmentProgress(pinnedProgress, 0.24, 0.58);
-      const bloomOut = segmentProgress(pinnedProgress, 0.8, 0.96);
-      bridge.style.setProperty('--bridge-progress', progress.toFixed(4));
-      bridge.style.setProperty('--bridge-clip', `${(8 + imageReveal * 142).toFixed(2)}%`);
-      bridge.style.setProperty('--bridge-image-scale', (1.16 - imageReveal * 0.14).toFixed(4));
-      bridge.style.setProperty('--bridge-origin-y', `${originY.toFixed(2)}%`);
-      bridge.style.setProperty('--bridge-copy-opacity', copyOpacity.toFixed(3));
-      bridge.style.setProperty('--bridge-copy-shift', `${((1 - copyIn) * 44 - copyOut * 24).toFixed(2)}px`);
-      bridge.style.setProperty('--bridge-rule-progress', segmentProgress(pinnedProgress, 0.18, 0.5).toFixed(3));
-      bridge.style.setProperty('--bridge-veil-opacity', (0.82 - imageReveal * 0.54).toFixed(3));
-      bridge.style.setProperty('--bridge-bloom-opacity', (bloomIn * (1 - bloomOut) * 0.88).toFixed(3));
-      bridge.style.setProperty('--bridge-light-shift', `${(-28 + pinnedProgress * 56).toFixed(2)}%`);
+      updateConversationCinema();
+      const progress = Number(conversation.style.getPropertyValue('--scene-progress')) || 0;
+      conversation.style.setProperty('--aftertalk-line-progress', segmentProgress(progress, 0.03, 0.9).toFixed(3));
     }
 
     if (aftertalk) {
@@ -609,6 +621,49 @@ function initScrollCinema() {
   }
 
   root.classList.add('has-scroll-cinema');
+  renderConversationState(reducedMotion.matches ? conversationSequence.length : 0);
+
+  if (!reducedMotion.matches && conversation && 'IntersectionObserver' in window) {
+    const conversationObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      conversationIsVisible = Boolean(entry?.isIntersecting);
+      if (conversationIsVisible) {
+        startConversationAutoplay();
+      } else {
+        clearConversationAutoplay();
+      }
+    }, { threshold: 0.28, rootMargin: '-4% 0px -14% 0px' });
+    conversationObserver.observe(conversation);
+  } else if (!reducedMotion.matches) {
+    conversationIsVisible = true;
+    startConversationAutoplay();
+  }
+
+  if (bridge) {
+    if (reducedMotion.matches || !('IntersectionObserver' in window)) {
+      bridge.classList.add('is-distillation-playing');
+    } else {
+      const startDistillation = () => {
+        if (elements.summonIntro && !elements.summonIntro.hidden) {
+          window.setTimeout(startDistillation, 120);
+          return;
+        }
+        bridge.classList.add('is-distillation-playing');
+        distillationObserver.unobserve(bridge);
+      };
+      const distillationObserver = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        if (!entry?.isIntersecting) return;
+        startDistillation();
+      }, { threshold: 0.22, rootMargin: '0px 0px -6% 0px' });
+      distillationObserver.observe(bridge);
+    }
+  }
+
+  conversationStartCue?.addEventListener('click', () => {
+    conversationIsVisible = true;
+    startConversationAutoplay({ restart: conversationRevealedCount > 0, immediate: true });
+  });
   window.addEventListener('scroll', requestScrollCinemaUpdate, { passive: true });
   window.addEventListener('resize', () => {
     conversationMetricsDirty = true;
@@ -627,9 +682,22 @@ function initScrollCinema() {
   requestScrollCinemaUpdate();
 }
 
+function releaseOpeningBoot() {
+  document.documentElement.classList.remove('is-opening-boot');
+  if (window.__hinahinaOpeningBootTimer) {
+    window.clearTimeout(window.__hinahinaOpeningBootTimer);
+    window.__hinahinaOpeningBootTimer = null;
+  }
+}
+
 function hideSummon() {
   summonRunId += 1;
+  window.clearTimeout(summonTimer);
+  window.clearTimeout(summonExitTimer);
+  summonTimer = null;
+  summonExitTimer = null;
   cancelScreenScrambles(elements.summonIntro);
+  releaseOpeningBoot();
   elements.summonIntro.hidden = true;
   elements.summonIntro.classList.remove('is-active', 'is-leaving');
   document.body.classList.remove('is-summoning');
@@ -646,7 +714,10 @@ function finishSummon() {
   window.clearTimeout(summonExitTimer);
   cancelScreenScrambles(elements.summonIntro);
   elements.summonIntro.classList.add('is-leaving');
-  summonExitTimer = window.setTimeout(hideSummon, 1050);
+  const exitDuration = elements.summonIntro.classList.contains('is-pop-opening')
+    ? POP_OPENING_EXIT_DURATION
+    : DEFAULT_OPENING_EXIT_DURATION;
+  summonExitTimer = window.setTimeout(hideSummon, exitDuration);
 }
 
 async function playSummon() {
@@ -668,6 +739,7 @@ async function playSummon() {
   await openingAssetsReady;
   if (runId !== summonRunId || elements.summonIntro.hidden) return;
 
+  releaseOpeningBoot();
   void elements.summonIntro.offsetWidth;
   window.requestAnimationFrame(() => {
     if (runId !== summonRunId || elements.summonIntro.hidden) return;
@@ -956,7 +1028,7 @@ elements.partNext.addEventListener('click', () => selectPart(currentPartIndex + 
 elements.download.addEventListener('click', downloadEdition);
 
 elements.shareX.addEventListener('click', () => {
-  const text = 'あなたのAIを、汁まみれに。AI人格「ひなひな」を無料配布します。ChatGPTとGeminiに対応。';
+  const text = 'あなたのAIを、汁まみれに。モルトバトルちゃんねるの妖精AI人格を無料配布します。ChatGPTとGeminiに対応。';
   const url = new URL('https://twitter.com/intent/tweet');
   url.searchParams.set('text', `${text}\n${window.location.origin}${window.location.pathname}`);
   window.open(url, '_blank', 'noopener,noreferrer');
@@ -964,8 +1036,8 @@ elements.shareX.addEventListener('click', () => {
 
 elements.shareNative.addEventListener('click', async () => {
   const shareData = {
-    title: 'AI人格「ひなひな」配布',
-    text: 'あなたのAIを、汁まみれに。ChatGPTとGeminiで使えるAI人格「ひなひな」を無料配布。',
+    title: '妖精AI人格を無料配布',
+    text: 'あなたのAIを、汁まみれに。ChatGPTとGeminiで使える、モルトバトルちゃんねるの妖精AI人格を無料配布。',
     url: `${window.location.origin}${window.location.pathname}`,
   };
 
@@ -986,11 +1058,11 @@ elements.shareNative.addEventListener('click', async () => {
   }
 });
 
-elements.summonSkip?.addEventListener('click', finishSummon);
+elements.summonSkip?.addEventListener('click', hideSummon);
 elements.summonReplay?.addEventListener('click', playSummon);
 
 window.addEventListener('pageshow', (event) => {
-  if (event.persisted) playSummon();
+  if (event.persisted) hideSummon();
 });
 
 window.addEventListener('hashchange', () => {
@@ -1004,4 +1076,8 @@ const initialEditionId = window.location.hash.slice(1);
 selectEdition(validEditionIds.has(initialEditionId) ? initialEditionId : 'chatgpt-plus', { updateHash: false });
 selectCharacter('hinahina');
 initScrollCinema();
-playSummon();
+if (window.__hinahinaOpeningBootAborted) {
+  hideSummon();
+} else {
+  playSummon();
+}

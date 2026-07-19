@@ -1,0 +1,3 @@
+/hinahina /persona/ 301
+/hinahina/ /persona/ 301
+/hinahina/* /persona/:splat 301
